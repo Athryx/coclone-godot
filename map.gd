@@ -63,6 +63,9 @@ var building_range_map: BuildingRangeMap
 func _ready():
 	generate_building_dist_map()
 	building_range_map = BuildingRangeMap.new(get_tree().get_nodes_in_group("building_range"))
+	
+	for building in get_tree().get_nodes_in_group("buildings"):
+		building.connect("spawn_projectile", self, "_on_spawn_projectile")
 
 # returns true if the tile is within the map bounds
 func is_valid_tile_pos(tile: Vector2i) -> bool:
@@ -78,6 +81,7 @@ func spawn_troop(position: Vector2, troop):
 	troop.global_transform.origin = Vector3(position.x, 0.0, position.y)
 	troop.building_range_map = building_range_map
 	troop.connect("needs_target", self, "_on_needs_target", [troop])
+	troop.connect("spawn_projectile", self, "_on_spawn_projectile")
 	add_child(troop)
 
 func _on_needs_target(troop):
@@ -85,3 +89,6 @@ func _on_needs_target(troop):
 	var troop_tile: Vector2i = troop.tile()
 	var target: Building = building_dist_map[troop_tile.x][troop_tile.y][0].building
 	troop.set_target(target)
+
+func _on_spawn_projectile(projectile):
+	add_child(projectile)

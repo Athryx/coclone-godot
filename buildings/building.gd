@@ -36,6 +36,8 @@ export var percent_contributor := true
 export var x_position := 0
 export var y_position := 0
 
+signal spawn_projectile(projectile)
+
 func _ready():
 	var half_footprint := footprint_size as float / 2.0
 	var x := x_position as float + half_footprint
@@ -62,3 +64,7 @@ func target_dist(position: Vector2) -> float:
 		return max(position.x - half_damagebox_size, 0.0)
 	else:
 		return Vector2(half_damagebox_size, half_damagebox_size).distance_to(position)
+
+# used to propagate spawn projectile from chile nodes within the scene
+func emit_spawn_projectile(projectile):
+	emit_signal("spawn_projectile", projectile)

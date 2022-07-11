@@ -25,6 +25,16 @@ _global_script_classes=[ {
 "path": "res://addons/godot-git-plugin/git_api.gdns"
 }, {
 "base": "Spatial",
+"class": "Projectile",
+"language": "GDScript",
+"path": "res://projectile.gd"
+}, {
+"base": "Spatial",
+"class": "ProjectileSpawner",
+"language": "GDScript",
+"path": "res://projectile_spawner.gd"
+}, {
+"base": "Spatial",
 "class": "Troop",
 "language": "GDScript",
 "path": "res://troops/troop.gd"
@@ -48,6 +58,8 @@ _global_script_class_icons={
 "Building": "",
 "DamageRange": "",
 "GitAPI": "",
+"Projectile": "",
+"ProjectileSpawner": "",
 "Troop": "",
 "Util": "",
 "Vector2i": "",

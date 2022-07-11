@@ -21,10 +21,8 @@ func contains_point(point: Vector2) -> bool:
 func set_current_target(target):
 	if target == null and current_target != null:
 		current_target = null
-		emit_signal("target_lost")
 	elif target != null:
 		current_target = target
-		print("acquired target")
 		emit_signal("target_acquired", target)
 
 func get_closest_target():

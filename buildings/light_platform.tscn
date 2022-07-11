@@ -1,7 +1,9 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://buildings/building.gd" type="Script" id=1]
 [ext_resource path="res://damage_range.gd" type="Script" id=2]
+[ext_resource path="res://projectile_spawner.gd" type="Script" id=3]
+[ext_resource path="res://projectiles/bullet.tscn" type="PackedScene" id=4]
 
 [sub_resource type="CubeMesh" id=1]
 size = Vector3( 3, 3, 3 )
@@ -19,3 +21,13 @@ radius = 10.0
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0 )
 mesh = SubResource( 1 )
 material/0 = null
+
+[node name="ProjectileSpawner" type="Spatial" parent="."]
+script = ExtResource( 3 )
+initial_wait_time = 0.5
+refire_time = 0.3
+projectile = ExtResource( 4 )
+
+[connection signal="target_acquired" from="DamageRange" to="ProjectileSpawner" method="set_target"]
+[connection signal="target_lost" from="DamageRange" to="ProjectileSpawner" method="set_target"]
+[connection signal="spawn_projectile" from="ProjectileSpawner" to="." method="emit_spawn_projectile"]

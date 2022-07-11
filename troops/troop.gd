@@ -10,6 +10,8 @@ export var move_speed := 0.0
 # this is the distance from their damage box
 export var approach_distance := 0.0
 
+signal spawn_projectile(projectile, start_spatial, target_spatial)
+
 const BuildingRangeMap = preload("res://buildings/building_range_map.gd")
 
 var building_range_map: BuildingRangeMap
@@ -52,3 +54,7 @@ func _physics_process(delta: float):
 	var old_position := position()
 	translate(Util.vector2_to_vector3(move_vector))
 	building_range_map.moved(self, old_position, position())
+
+# used to propagate spawn projectile from chile nodes within the scene
+func emit_spawn_projectile(projectile, start_spatial, end_spatial):
+	emit_signal("spawn_projectile", projectile, start_spatial, end_spatial)

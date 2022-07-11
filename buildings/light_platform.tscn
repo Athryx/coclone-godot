@@ -1,0 +1,21 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://buildings/building.gd" type="Script" id=1]
+[ext_resource path="res://damage_range.gd" type="Script" id=2]
+
+[sub_resource type="CubeMesh" id=1]
+size = Vector3( 3, 3, 3 )
+
+[node name="LightPlatform" type="Spatial" groups=["buildings"]]
+script = ExtResource( 1 )
+building_name = "Light Platform"
+max_health = 120
+
+[node name="DamageRange" type="Spatial" parent="." groups=["building_range"]]
+script = ExtResource( 2 )
+radius = 10.0
+
+[node name="MeshInstance" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0 )
+mesh = SubResource( 1 )
+material/0 = null

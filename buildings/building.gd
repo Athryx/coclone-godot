@@ -45,16 +45,16 @@ func _ready():
 	global_transform.origin.x = x
 	global_transform.origin.z = y
 
-func position() -> Vector2i:
+func corner_position() -> Vector2i:
 	var half_footprint := footprint_size as float / 2.0
-	return Util.position_to_tile_pos(center_position() - Vector2(half_footprint, half_footprint))
+	return Util.position_to_tile_pos(position() - Vector2(half_footprint, half_footprint))
 
-func center_position() -> Vector2:
+func position() -> Vector2:
 	return Vector2(global_transform.origin.x, global_transform.origin.z)
 
 # gets the distance from the given point to the buildings target box
 func target_dist(position: Vector2) -> float:
-	position = (position - center_position()).abs()
+	position = (position - position()).abs()
 	
 	var half_damagebox_size := damagebox_size / 2.0
 	

@@ -10,7 +10,18 @@ export var move_speed := 0.0
 # this is the distance from their damage box
 export var approach_distance := 0.0
 
-signal spawn_projectile(projectile, start_spatial, target_spatial)
+signal spawn_projectile(projectile)
+
+# signals sent when the unit is within range of the building, not when the ai picks a building to attack
+signal target_acquired(building)
+signal taget_lost
+
+enum LastTargetSignal {
+	TARGET_ACQUIRED,
+	TARGET_LOST,
+}
+
+var last_target_signal: int = LastTargetSignal.TARGET_LOST
 
 const BuildingRangeMap = preload("res://buildings/building_range_map.gd")
 
@@ -44,11 +55,14 @@ func _physics_process(delta: float):
 		return
 	
 	if current_target.target_dist(position()) <= approach_distance:
+		if last_target_signal == LastTargetSignal.TARGET_LOST:
+			emit_signal("target_acquired", current_target)
+			last_target_signal = LastTargetSignal.TARGET_ACQUIRED
 		return
 	
 	var move_distance := delta * move_speed
 	
-	var move_direction: Vector2 = current_target.center_position() - position()
+	var move_direction: Vector2 = current_target.position() - position()
 	var move_vector := move_distance * move_direction.normalized()
 	
 	var old_position := position()
@@ -56,5 +70,5 @@ func _physics_process(delta: float):
 	building_range_map.moved(self, old_position, position())
 
 # used to propagate spawn projectile from chile nodes within the scene
-func emit_spawn_projectile(projectile, start_spatial, end_spatial):
-	emit_signal("spawn_projectile", projectile, start_spatial, end_spatial)
+func emit_spawn_projectile(projectile):
+	emit_signal("spawn_projectile", projectile)

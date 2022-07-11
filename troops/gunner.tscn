@@ -1,6 +1,8 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://troops/troop.gd" type="Script" id=1]
+[ext_resource path="res://projectiles/bullet.tscn" type="PackedScene" id=2]
+[ext_resource path="res://projectile_spawner.gd" type="Script" id=3]
 
 [sub_resource type="CapsuleMesh" id=1]
 
@@ -13,3 +15,14 @@ approach_distance = 3.0
 transform = Transform( 0.5, 0, 0, 0, -2.18557e-08, -0.5, 0, 0.5, -2.18557e-08, 0, 0.824866, 0 )
 mesh = SubResource( 1 )
 material/0 = null
+
+[node name="ProjectileSpawner" type="Spatial" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.00471, 0 )
+script = ExtResource( 3 )
+initial_wait_time = 0.5
+refire_time = 0.3
+projectile = ExtResource( 2 )
+
+[connection signal="taget_lost" from="." to="ProjectileSpawner" method="set_target"]
+[connection signal="target_acquired" from="." to="ProjectileSpawner" method="set_target"]
+[connection signal="spawn_projectile" from="ProjectileSpawner" to="." method="emit_spawn_projectile"]

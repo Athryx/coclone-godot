@@ -2,6 +2,7 @@ extends Spatial
 class_name Troop
 
 export var max_health := 0
+onready var health := max_health
 
 # movement speed is in tiles per second
 export var move_speed := 0.0
@@ -9,6 +10,8 @@ export var move_speed := 0.0
 # how close the troop will approach buildings
 # this is the distance from their damage box
 export var approach_distance := 0.0
+
+signal destroyed
 
 signal spawn_projectile(projectile)
 
@@ -31,12 +34,11 @@ var building_range_map: BuildingRangeMap
 # something else should then call set target on this troop
 signal needs_target
 
-var needs_target_emitted := false
 var current_target = null
 
 func set_target(building: Building):
 	current_target = building
-	needs_target_emitted = false
+	current_target.connect("destroyed", self, "_on_current_target_destroyed", [], CONNECT_ONESHOT)
 
 func position() -> Vector2:
 	return Vector2(global_transform.origin.x, global_transform.origin.z)
@@ -46,12 +48,11 @@ func tile() -> Vector2i:
 
 func _ready():
 	building_range_map.new_troop_at(self, position())
+	if current_target == null:
+		emit_signal("needs_target")
 
 func _physics_process(delta: float):
 	if current_target == null:
-		if !needs_target_emitted:
-			emit_signal("needs_target")
-			needs_target_emitted = true
 		return
 	
 	if current_target.target_dist(position()) <= approach_distance:
@@ -68,6 +69,24 @@ func _physics_process(delta: float):
 	var old_position := position()
 	translate(Util.vector2_to_vector3(move_vector))
 	building_range_map.moved(self, old_position, position())
+
+# returns true if destroyed
+func do_damage(damage: int) -> bool:
+	# don't emit the destroyed signal multiple times if it is already destroyed
+	if health == 0:
+		return true
+
+	health = max(0, health - damage)
+	if health == 0:
+		emit_signal("destroyed")
+		queue_free()
+		return true
+	return false
+
+func _on_current_target_destroyed():
+	current_target = null
+	print("destroyed building")
+	emit_signal("needs_target")
 
 # used to propagate spawn projectile from chile nodes within the scene
 func emit_spawn_projectile(projectile):

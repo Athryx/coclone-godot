@@ -17,6 +17,7 @@ export var hitbox_size := 3.0
 export var damagebox_size := 3.0
 
 export var max_health := 0
+onready var health := max_health
 
 # Determines when units will target this building
 enum TargetMode {
@@ -35,6 +36,8 @@ export var percent_contributor := true
 # position of the building on the map
 export var x_position := 0
 export var y_position := 0
+
+signal destroyed
 
 signal spawn_projectile(projectile)
 
@@ -64,6 +67,21 @@ func target_dist(position: Vector2) -> float:
 		return max(position.x - half_damagebox_size, 0.0)
 	else:
 		return Vector2(half_damagebox_size, half_damagebox_size).distance_to(position)
+
+# returns true if destroyed
+func do_damage(damage: int) -> bool:
+	# don't emit destroyed signal multiple times
+	if health == 0:
+		return true
+	
+	health = max(0, health - damage)
+	if health == 0:
+		emit_signal("destroyed")
+		return true
+	return false
+
+func is_destroyed() -> bool:
+	return health == 0
 
 # used to propagate spawn projectile from chile nodes within the scene
 func emit_spawn_projectile(projectile):

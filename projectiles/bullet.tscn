@@ -1,12 +1,13 @@
 [gd_scene load_steps=3 format=2]
 
-[ext_resource path="res://projectile.gd" type="Script" id=1]
+[ext_resource path="res://projectiles/bullet.gd" type="Script" id=1]
 
 [sub_resource type="CapsuleMesh" id=1]
 
-[node name="Projectile" type="Spatial"]
+[node name="Bullet" type="Spatial"]
 script = ExtResource( 1 )
-speed = 20.0
+speed = 10.0
+damage = 10
 
 [node name="MeshInstance" type="MeshInstance" parent="."]
 transform = Transform( 0.05, 0, 0, 0, 0.05, 0, 0, 0, 0.1, 0, 0, 0 )

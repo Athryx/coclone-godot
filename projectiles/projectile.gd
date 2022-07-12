@@ -10,9 +10,6 @@ export var seeking := true
 # once the projectile is within this distance of the target, it is considered a hit
 export var hit_dist := 0.01
 
-# emitted when the projectile hits its target
-signal hit
-
 # start is a spatial
 var start
 
@@ -37,7 +34,9 @@ func target_vec() -> Vector3:
 
 func _ready():
 	global_transform.origin = start.global_transform.origin
-	if not seeking:
+	if seeking:
+		target.connect("destroyed", self, "_on_target_destroyed", [], CONNECT_ONESHOT)
+	else:
 		target_point = Util.vector2_to_vector3(target.position())
 
 func _physics_process(delta):
@@ -50,5 +49,16 @@ func _physics_process(delta):
 	global_transform.origin += move_dist * direction
 	
 	if target_vec().length() <= hit_dist:
-		emit_signal("hit")
+		if seeking:
+			_on_hit(target)
+		else:
+			_on_hit(target_point)
 		queue_free()
+
+# called when projectile strikes the target
+func _on_hit(target):
+	pass
+
+func _on_target_destroyed():
+	target_point = Util.vector2_to_vector3(target.position())
+	seeking = false

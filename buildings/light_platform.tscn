@@ -11,7 +11,7 @@ size = Vector3( 3, 3, 3 )
 [node name="LightPlatform" type="Spatial" groups=["buildings"]]
 script = ExtResource( 1 )
 building_name = "Light Platform"
-max_health = 120
+max_health = 300
 
 [node name="DamageRange" type="Spatial" parent="." groups=["building_range"]]
 script = ExtResource( 2 )

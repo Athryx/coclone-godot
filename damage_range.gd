@@ -19,10 +19,15 @@ func contains_point(point: Vector2) -> bool:
 	return (point - position()).length() <= radius
 
 func set_current_target(target):
+	if current_target != null:
+		current_target.disconnect("destroyed", self, "_on_current_target_destroyed")
+	
 	if target == null and current_target != null:
 		current_target = null
+		emit_signal("target_lost")
 	elif target != null:
 		current_target = target
+		current_target.connect("destroyed", self, "_on_current_target_destroyed")
 		emit_signal("target_acquired", target)
 
 func get_closest_target():
@@ -51,3 +56,11 @@ func notify_troop_exited(troop):
 			set_current_target(null)
 		else:
 			set_current_target(closest_target)
+
+func _on_current_target_destroyed():
+	targets_in_range.erase(current_target)
+	set_current_target(null)
+	
+	var closest_target = get_closest_target()
+	if closest_target != null:
+		set_current_target(closest_target)

@@ -8,6 +8,7 @@
 
 [node name="Troop" type="Spatial"]
 script = ExtResource( 1 )
+max_health = 50
 move_speed = 4.0
 approach_distance = 3.0
 

@@ -37,6 +37,12 @@ export var percent_contributor := true
 export var x_position := 0
 export var y_position := 0
 
+export(NodePath) var alive_model_node: NodePath
+onready var alive_model = get_node(alive_model_node)
+
+export(NodePath) var destroyed_model_node: NodePath
+onready var destroyed_model = get_node(destroyed_model_node)
+
 signal destroyed
 
 signal spawn_projectile(projectile)
@@ -47,6 +53,9 @@ func _ready():
 	var y := y_position as float + half_footprint
 	global_transform.origin.x = x
 	global_transform.origin.z = y
+	
+	alive_model.visible = true
+	destroyed_model.visible = false
 
 func corner_position() -> Vector2i:
 	var half_footprint := footprint_size as float / 2.0
@@ -77,6 +86,8 @@ func do_damage(damage: int) -> bool:
 	health = max(0, health - damage)
 	if health == 0:
 		emit_signal("destroyed")
+		alive_model.visible = false
+		destroyed_model.visible = true
 		return true
 	return false
 

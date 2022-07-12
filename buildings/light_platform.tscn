@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://buildings/building.gd" type="Script" id=1]
 [ext_resource path="res://damage_range.gd" type="Script" id=2]
@@ -8,16 +8,20 @@
 [sub_resource type="CubeMesh" id=1]
 size = Vector3( 3, 3, 3 )
 
+[sub_resource type="CubeMesh" id=2]
+
 [node name="LightPlatform" type="Spatial" groups=["buildings"]]
 script = ExtResource( 1 )
 building_name = "Light Platform"
 max_health = 300
+alive_model_node = NodePath("AliveMesh")
+destroyed_model_node = NodePath("DestroyedMesh")
 
 [node name="DamageRange" type="Spatial" parent="." groups=["building_range"]]
 script = ExtResource( 2 )
 radius = 10.0
 
-[node name="MeshInstance" type="MeshInstance" parent="."]
+[node name="AliveMesh" type="MeshInstance" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0 )
 mesh = SubResource( 1 )
 material/0 = null
@@ -28,6 +32,12 @@ initial_wait_time = 0.5
 refire_time = 0.3
 projectile = ExtResource( 4 )
 
+[node name="DestroyedMesh" type="MeshInstance" parent="."]
+transform = Transform( 1.5, 0, 0, 0, 0.1, 0, 0, 0, 1.5, 0, 0, 0 )
+mesh = SubResource( 2 )
+material/0 = null
+
+[connection signal="destroyed" from="." to="DamageRange" method="disable"]
 [connection signal="target_acquired" from="DamageRange" to="ProjectileSpawner" method="set_target"]
 [connection signal="target_lost" from="DamageRange" to="ProjectileSpawner" method="set_target"]
 [connection signal="spawn_projectile" from="ProjectileSpawner" to="." method="emit_spawn_projectile"]

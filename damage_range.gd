@@ -12,6 +12,8 @@ var current_target = null
 # we only care about the keys
 var targets_in_range := {}
 
+var disabled := false
+
 func position() -> Vector2:
 	return Vector2(global_transform.origin.x, global_transform.origin.z)
 
@@ -43,11 +45,17 @@ func get_closest_target():
 	return closest_target
 
 func notify_troop_entered(troop):
+	if disabled:
+		return
+	
 	targets_in_range[troop] = null
 	if current_target == null:
 		set_current_target(troop)
 
 func notify_troop_exited(troop):
+	if disabled:
+		return
+	
 	targets_in_range.erase(troop)
 	
 	if current_target == troop:
@@ -56,6 +64,13 @@ func notify_troop_exited(troop):
 			set_current_target(null)
 		else:
 			set_current_target(closest_target)
+
+# stops the damage range from doing anything
+# should be used when a building is destroyed for example
+func disable():
+	disabled = true
+	targets_in_range.clear()
+	set_current_target(null)
 
 func _on_current_target_destroyed():
 	targets_in_range.erase(current_target)

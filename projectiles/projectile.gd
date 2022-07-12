@@ -50,13 +50,14 @@ func _physics_process(delta):
 	
 	if target_vec().length() <= hit_dist:
 		if seeking:
-			_on_hit(target)
+			_on_hit(target, true)
 		else:
-			_on_hit(target_point)
+			_on_hit(target_point, false)
 		queue_free()
 
 # called when projectile strikes the target
-func _on_hit(target):
+# hit target is true if seeking, false if not
+func _on_hit(target, hit_target: bool):
 	pass
 
 func _on_target_destroyed():

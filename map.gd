@@ -87,7 +87,22 @@ func spawn_troop(position: Vector2, troop):
 func _on_needs_target(troop):
 	# for now, just look for the closest building, we'll worry about hitboxes and walls later
 	var troop_tile: Vector2i = troop.tile()
-	var target: Building = building_dist_map[troop_tile.x][troop_tile.y][0].building
+	var target: Building
+	var tile_dist_list: Array = building_dist_map[troop_tile.x][troop_tile.y]
+	
+	var i := 0
+	while i < tile_dist_list.size():
+		var building_tile: TileBuildingDist = tile_dist_list[i]
+		
+		if building_tile.building.is_destroyed():
+			tile_dist_list.remove(i)
+			continue
+		
+		# for now, just select the first target available
+		target = building_tile.building
+		break
+		i += 1
+	
 	troop.set_target(target)
 
 func _on_spawn_projectile(projectile):

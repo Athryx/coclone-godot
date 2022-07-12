@@ -24,6 +24,6 @@ initial_wait_time = 0.5
 refire_time = 0.3
 projectile = ExtResource( 2 )
 
-[connection signal="taget_lost" from="." to="ProjectileSpawner" method="set_target"]
 [connection signal="target_acquired" from="." to="ProjectileSpawner" method="set_target"]
+[connection signal="target_lost" from="." to="ProjectileSpawner" method="set_target"]
 [connection signal="spawn_projectile" from="ProjectileSpawner" to="." method="emit_spawn_projectile"]

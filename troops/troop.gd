@@ -17,7 +17,7 @@ signal spawn_projectile(projectile)
 
 # signals sent when the unit is within range of the building, not when the ai picks a building to attack
 signal target_acquired(building)
-signal taget_lost
+signal target_lost
 
 enum LastTargetSignal {
 	TARGET_ACQUIRED,
@@ -85,7 +85,8 @@ func do_damage(damage: int) -> bool:
 
 func _on_current_target_destroyed():
 	current_target = null
-	print("destroyed building")
+	emit_signal("target_lost")
+	last_target_signal = LastTargetSignal.TARGET_LOST
 	emit_signal("needs_target")
 
 # used to propagate spawn projectile from chile nodes within the scene

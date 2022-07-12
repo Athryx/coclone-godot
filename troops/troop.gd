@@ -36,9 +36,14 @@ signal needs_target
 
 var current_target = null
 
-func set_target(building: Building):
-	current_target = building
-	current_target.connect("destroyed", self, "_on_current_target_destroyed", [], CONNECT_ONESHOT)
+func set_target(building):
+	if building == null and current_target != null:
+		current_target = null
+		emit_signal("target_lost")
+		last_target_signal = LastTargetSignal.TARGET_LOST
+	elif building != null:
+		current_target = building
+		current_target.connect("destroyed", self, "_on_current_target_destroyed", [], CONNECT_ONESHOT)
 
 func position() -> Vector2:
 	return Vector2(global_transform.origin.x, global_transform.origin.z)
@@ -84,9 +89,7 @@ func do_damage(damage: int) -> bool:
 	return false
 
 func _on_current_target_destroyed():
-	current_target = null
-	emit_signal("target_lost")
-	last_target_signal = LastTargetSignal.TARGET_LOST
+	set_target(null)
 	emit_signal("needs_target")
 
 # used to propagate spawn projectile from chile nodes within the scene

@@ -87,7 +87,7 @@ func spawn_troop(position: Vector2, troop):
 func _on_needs_target(troop):
 	# for now, just look for the closest building, we'll worry about hitboxes and walls later
 	var troop_tile: Vector2i = troop.tile()
-	var target: Building
+	var target = null
 	var tile_dist_list: Array = building_dist_map[troop_tile.x][troop_tile.y]
 	
 	var i := 0

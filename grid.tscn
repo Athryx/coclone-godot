@@ -1,0 +1,21 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://assets/grid.obj" type="ArrayMesh" id=1]
+
+[sub_resource type="Shader" id=10]
+code = "shader_type spatial;
+
+void fragment() {
+	vec4 world_pos = CAMERA_MATRIX * vec4(VERTEX, 1.0);
+	vec3 model_pos = (inverse(WORLD_MATRIX) * world_pos).xyz;
+	float center_dist = distance(model_pos, vec3(0.0));
+	
+	ALPHA = 1.0 / (1.0 + exp(0.7 * center_dist));
+}"
+
+[sub_resource type="ShaderMaterial" id=9]
+shader = SubResource( 10 )
+
+[node name="Grid" type="MeshInstance"]
+mesh = ExtResource( 1 )
+material/0 = SubResource( 9 )

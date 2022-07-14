@@ -12,7 +12,19 @@ static func vector2_to_vector3(vector: Vector2) -> Vector3:
 	return Vector3(vector.x, 0.0, vector.y)
 
 static func position_to_tile_pos(position: Vector2) -> Vector2i:
-	return Vector2i.new(position.x as float, position.y as float)
+	var x: int
+	if position.x < 0.0:
+		x = position.x as int - 1
+	else:
+		x = position.x as int
+	
+	var y: int
+	if position.y < 0.0:
+		y = position.y as int - 1
+	else:
+		y = position.y as int
+	
+	return Vector2i.new(x, y)
 
 static func round_to_tile_pos(position: Vector2) -> Vector2:
 	return position_to_tile_pos(position).to_vector2()

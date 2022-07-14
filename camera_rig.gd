@@ -34,3 +34,6 @@ func _physics_process(delta):
 	
 	if Input.is_action_pressed("cam_zoom_out"):
 		camera.size = min(camera.size + zoom_sensitivity, max_zoom)
+
+func camera_direction_vec() -> Vector3:
+	return camera.project_ray_normal(Vector2(0.0, 0.0))

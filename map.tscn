@@ -17,3 +17,19 @@ y_position = 7
 [node name="LightPlatform3" parent="." instance=ExtResource( 2 )]
 x_position = 62
 y_position = 11
+
+[node name="LightPlatform4" parent="." instance=ExtResource( 2 )]
+x_position = 64
+y_position = 58
+
+[node name="LightPlatform5" parent="." instance=ExtResource( 2 )]
+x_position = 71
+y_position = 8
+
+[node name="LightPlatform6" parent="." instance=ExtResource( 2 )]
+x_position = 70
+y_position = 40
+
+[node name="LightPlatform7" parent="." instance=ExtResource( 2 )]
+x_position = 17
+y_position = 62

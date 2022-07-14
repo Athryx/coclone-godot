@@ -10,6 +10,9 @@ export var max_zoom := 40.0
 
 onready var camera = $Camera
 
+func _ready():
+	camera.size = max_zoom
+
 func _physics_process(delta):
 	if Input.is_action_pressed("cam_forward"):
 		translate_object_local(Vector3(0.0, 0.0, -pan_sensitivity))

@@ -21,15 +21,11 @@ func contains_point(point: Vector2) -> bool:
 	return (point - position()).length() <= radius
 
 func set_current_target(target):
-	if current_target != null:
-		current_target.disconnect("destroyed", self, "_on_current_target_destroyed")
-	
 	if target == null and current_target != null:
 		current_target = null
 		emit_signal("target_lost")
 	elif target != null:
 		current_target = target
-		current_target.connect("destroyed", self, "_on_current_target_destroyed")
 		emit_signal("target_acquired", target)
 
 func get_closest_target():
@@ -48,6 +44,7 @@ func notify_troop_entered(troop):
 	if disabled:
 		return
 	
+	troop.connect("destroyed", self, "_on_target_destroyed", [troop], CONNECT_ONESHOT)
 	targets_in_range[troop] = null
 	if current_target == null:
 		set_current_target(troop)
@@ -64,18 +61,28 @@ func notify_troop_exited(troop):
 			set_current_target(null)
 		else:
 			set_current_target(closest_target)
+	
+	troop.disconnect("destroyed", self, "_on_target_destroyed")
 
 # stops the damage range from doing anything
 # should be used when a building is destroyed for example
 func disable():
 	disabled = true
-	targets_in_range.clear()
-	set_current_target(null)
-
-func _on_current_target_destroyed():
-	targets_in_range.erase(current_target)
-	set_current_target(null)
+	for troop in targets_in_range:
+		troop.disconnect("destroyed", self, "_on_target_destroyed")
 	
-	var closest_target = get_closest_target()
-	if closest_target != null:
-		set_current_target(closest_target)
+	targets_in_range.clear()
+	
+	if current_target != null:
+		current_target.disconnect("destroyed", self, "_on_target_destroyed")
+		set_current_target(null)
+
+func _on_target_destroyed(troop):
+	targets_in_range.erase(troop)
+	
+	if current_target == troop:
+		set_current_target(null)
+		
+		var closest_target = get_closest_target()
+		if closest_target != null:
+			set_current_target(closest_target)

@@ -13,7 +13,7 @@ size = Vector3( 3, 3, 3 )
 [node name="LightPlatform" type="Spatial" groups=["buildings"]]
 script = ExtResource( 1 )
 building_name = "Light Platform"
-max_health = 300
+max_health = 500
 alive_model_node = NodePath("AliveMesh")
 destroyed_model_node = NodePath("DestroyedMesh")
 

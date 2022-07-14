@@ -6,7 +6,7 @@
 
 [node name="Bullet" type="Spatial"]
 script = ExtResource( 1 )
-speed = 10.0
+speed = 40.0
 damage = 10
 
 [node name="MeshInstance" type="MeshInstance" parent="."]

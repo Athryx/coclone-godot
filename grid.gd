@@ -20,7 +20,4 @@ func _ready():
 			
 			var pos := Vector3(xpos, 0.0, zpos)
 			var instance_transform := Transform(Basis(), pos)
-			print(instance_transform.origin)
 			multimesh.set_instance_transform(index, instance_transform)
-	
-	print(multimesh.get_instance_transform(0).origin)

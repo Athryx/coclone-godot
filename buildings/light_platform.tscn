@@ -1,18 +1,19 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://buildings/building.gd" type="Script" id=1]
 [ext_resource path="res://damage_range.gd" type="Script" id=2]
 [ext_resource path="res://projectile_spawner.gd" type="Script" id=3]
 [ext_resource path="res://projectiles/bullet.tscn" type="PackedScene" id=4]
-
-[sub_resource type="CubeMesh" id=1]
-size = Vector3( 3, 3, 3 )
+[ext_resource path="res://assets/buildings/light_platform/lvl1_machine_gun.glb" type="PackedScene" id=5]
+[ext_resource path="res://aimer.gd" type="Script" id=6]
+[ext_resource path="res://assets/buildings/light_platform/lvl1_base.glb" type="PackedScene" id=7]
 
 [sub_resource type="CubeMesh" id=2]
 
 [node name="LightPlatform" type="Spatial" groups=["buildings"]]
 script = ExtResource( 1 )
 building_name = "Light Platform"
+aim_pos_height = 1.1
 max_health = 500
 alive_model_node = NodePath("AliveMesh")
 destroyed_model_node = NodePath("DestroyedMesh")
@@ -21,23 +22,34 @@ destroyed_model_node = NodePath("DestroyedMesh")
 script = ExtResource( 2 )
 radius = 10.0
 
-[node name="AliveMesh" type="MeshInstance" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0 )
-mesh = SubResource( 1 )
-material/0 = null
-
-[node name="ProjectileSpawner" type="Spatial" parent="."]
-script = ExtResource( 3 )
-initial_wait_time = 0.5
-refire_time = 0.3
-projectile = ExtResource( 4 )
-
 [node name="DestroyedMesh" type="MeshInstance" parent="."]
 transform = Transform( 1.5, 0, 0, 0, 0.1, 0, 0, 0, 1.5, 0, 0, 0 )
 mesh = SubResource( 2 )
 material/0 = null
 
+[node name="AliveMesh" type="Spatial" parent="."]
+
+[node name="Aimer" type="Spatial" parent="AliveMesh"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.05666, 0 )
+script = ExtResource( 6 )
+rotate_speed_azimuth = 6.5
+rotate_speed_elevation = 1.0
+
+[node name="lvl1_machine_gun" parent="AliveMesh/Aimer" instance=ExtResource( 5 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.057, 0 )
+
+[node name="ProjectileSpawner" type="Spatial" parent="AliveMesh/Aimer"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.221931, -1.75841 )
+script = ExtResource( 3 )
+initial_wait_time = 0.5
+refire_time = 0.3
+projectile = ExtResource( 4 )
+
+[node name="lvl1_base" parent="AliveMesh" instance=ExtResource( 7 )]
+
 [connection signal="destroyed" from="." to="DamageRange" method="disable"]
-[connection signal="target_acquired" from="DamageRange" to="ProjectileSpawner" method="set_target"]
-[connection signal="target_lost" from="DamageRange" to="ProjectileSpawner" method="set_target"]
-[connection signal="spawn_projectile" from="ProjectileSpawner" to="." method="emit_spawn_projectile"]
+[connection signal="target_acquired" from="DamageRange" to="AliveMesh/Aimer/ProjectileSpawner" method="set_target"]
+[connection signal="target_acquired" from="DamageRange" to="AliveMesh/Aimer" method="set_target"]
+[connection signal="target_lost" from="DamageRange" to="AliveMesh/Aimer/ProjectileSpawner" method="set_target"]
+[connection signal="target_lost" from="DamageRange" to="AliveMesh/Aimer" method="set_target"]
+[connection signal="spawn_projectile" from="AliveMesh/Aimer/ProjectileSpawner" to="." method="emit_spawn_projectile"]

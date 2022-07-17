@@ -16,6 +16,9 @@ export var hitbox_size := 3.0
 # Only square damage boxes are supported
 export var damagebox_size := 3.0
 
+# how high up on the building projectiles will be aimed
+export var aim_pos_height := 0.0
+
 export var max_health := 0
 onready var health := max_health
 
@@ -63,6 +66,10 @@ func corner_position() -> Vector2i:
 
 func position() -> Vector2:
 	return Vector2(global_transform.origin.x, global_transform.origin.z)
+
+func aim_position() -> Vector3:
+	var position := position()
+	return Vector3(position.x, aim_pos_height, position.y)
 
 # gets the distance from the given point to the buildings target box
 func target_dist(position: Vector2) -> float:

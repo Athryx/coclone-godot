@@ -1,5 +1,6 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=3 format=2]
 
+[ext_resource path="res://assets/scenery/scenery.glb" type="PackedScene" id=1]
 [ext_resource path="res://assets/scenery/grass_plane_new.glb" type="PackedScene" id=2]
 
 [node name="Scenery" type="Spatial"]
@@ -11,3 +12,6 @@ directional_shadow_depth_range = 1
 
 [node name="grass_plane_new" parent="." instance=ExtResource( 2 )]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 37.5, 0, 37.5 )
+
+[node name="scenery" parent="." instance=ExtResource( 1 )]
+transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 37.5, 0, 37.5 )

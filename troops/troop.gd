@@ -11,6 +11,9 @@ export var move_speed := 0.0
 # this is the distance from their damage box
 export var approach_distance := 0.0
 
+# how high up on the building projectiles will be aimed
+export var aim_pos_height := 0.0
+
 signal destroyed
 
 signal spawn_projectile(projectile)
@@ -47,6 +50,10 @@ func set_target(building):
 
 func position() -> Vector2:
 	return Vector2(global_transform.origin.x, global_transform.origin.z)
+
+func aim_position() -> Vector3:
+	var position := position()
+	return Vector3(position.x, aim_pos_height, position.y)
 
 func tile() -> Vector2i:
 	return Util.position_to_tile_pos(position())

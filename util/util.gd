@@ -35,3 +35,6 @@ static func tile_bounds(center: Vector2, size: float) -> TileBounds:
 		position_to_tile_pos(center - size_vec),
 		Vector2im.add(position_to_tile_pos(center + size_vec), Vector2i.new(1, 1))
 	)
+
+static func signed_angle_between(a: Vector2, b: Vector2) -> float:
+	return -atan2(a.x * b.y - a.y * b.x, a.x * b.x + a.y * b.y)

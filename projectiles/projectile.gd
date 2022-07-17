@@ -10,6 +10,10 @@ export var seeking := true
 # once the projectile is within this distance of the target, it is considered a hit
 export var hit_dist := 0.01
 
+# if true, will aim at the target at y = 0, which means it will hit the ground
+# if false, it will aim at the target's aim point
+export var hit_ground := false
+
 # start is a spatial
 var start
 
@@ -23,9 +27,16 @@ var target_point = null
 func position() -> Vector3:
 	return global_transform.origin
 
+# returns where we should aim on the given building or troop
+func aim_position_of_target(target) -> Vector3:
+	if hit_ground:
+		return Util.vector2_to_vector3(target.position())
+	else:
+		return target.aim_position()
+
 func target_position() -> Vector3:
 	if seeking:
-		return Util.vector2_to_vector3(target.position())
+		return aim_position_of_target(target)
 	else:
 		return target_point
 
@@ -37,7 +48,7 @@ func _ready():
 	if seeking:
 		target.connect("destroyed", self, "_on_target_destroyed", [], CONNECT_ONESHOT)
 	else:
-		target_point = Util.vector2_to_vector3(target.position())
+		target_point = aim_position_of_target(target)
 
 func _physics_process(delta):
 	# rotate towards target

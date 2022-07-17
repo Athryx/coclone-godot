@@ -4,8 +4,9 @@
 
 [node name="CameraRig" type="Spatial"]
 script = ExtResource( 1 )
+min_zoom = 10.0
 
 [node name="Camera" type="Camera" parent="."]
-transform = Transform( 1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 30, 30 )
+transform = Transform( 1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 43, 43 )
 projection = 1
 size = 40.0

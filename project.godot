@@ -10,6 +10,11 @@ config_version=4
 
 _global_script_classes=[ {
 "base": "Spatial",
+"class": "Aimer",
+"language": "GDScript",
+"path": "res://aimer.gd"
+}, {
+"base": "Spatial",
 "class": "Building",
 "language": "GDScript",
 "path": "res://buildings/building.gd"
@@ -60,6 +65,7 @@ _global_script_classes=[ {
 "path": "res://util/vector2im.gd"
 } ]
 _global_script_class_icons={
+"Aimer": "",
 "Building": "",
 "Bullet": "",
 "DamageRange": "",

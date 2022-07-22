@@ -19,6 +19,7 @@ signal destroyed
 signal spawn_projectile(projectile)
 
 # signals sent when the unit is within range of the building, not when the ai picks a building to attack
+# used to control attacks
 signal target_acquired(building)
 signal target_lost
 
@@ -94,6 +95,10 @@ func do_damage(damage: int) -> bool:
 		queue_free()
 		return true
 	return false
+
+# stops the unit when the battle time has ended
+func disable():
+	set_target(null)
 
 func _on_current_target_destroyed():
 	set_target(null)

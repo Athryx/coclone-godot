@@ -6,7 +6,7 @@
 
 [sub_resource type="CapsuleMesh" id=1]
 
-[node name="Troop" type="Spatial"]
+[node name="Troop" type="Spatial" groups=["needs_disable"]]
 script = ExtResource( 1 )
 max_health = 50
 move_speed = 4.0

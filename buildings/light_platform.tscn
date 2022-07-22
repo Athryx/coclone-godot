@@ -19,7 +19,7 @@ max_health = 500
 alive_model_node = NodePath("AliveMesh")
 destroyed_model_node = NodePath("DestroyedMesh")
 
-[node name="DamageRange" type="Spatial" parent="." groups=["building_range"]]
+[node name="DamageRange" type="Spatial" parent="." groups=["building_range", "needs_disable"]]
 script = ExtResource( 2 )
 radius = 10.0
 

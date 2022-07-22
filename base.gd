@@ -76,3 +76,4 @@ func _on_building_destroyed():
 
 func _on_BattleTimer_timeout():
 	attack_state = AttackState.DONE
+	map.disable()

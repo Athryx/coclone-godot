@@ -181,7 +181,12 @@ func show_valid_spawn_overlay():
 	)
 	spawn_mesh_tween.start()
 
+var disabled := false
+
 func spawn_troop(position: Vector2, troop):
+	if disabled:
+		return
+	
 	assert(is_valid_map_pos(position))
 	troop.global_transform.origin = Vector3(position.x, 0.0, position.y)
 	troop.building_range_map = building_range_map
@@ -189,7 +194,15 @@ func spawn_troop(position: Vector2, troop):
 	troop.connect("spawn_projectile", self, "_on_spawn_projectile")
 	add_child(troop)
 
+# called when the attack has finished to stop troops and buildings from moving or shooting
+func disable():
+	disabled = true
+	get_tree().call_group("needs_disable", "disable")
+
 func _on_needs_target(troop):
+	if disabled:
+		return
+	
 	# for now, just look for the closest building, we'll worry about hitboxes and walls later
 	var troop_tile: Vector2i = troop.tile()
 	var target = null
@@ -211,4 +224,7 @@ func _on_needs_target(troop):
 	troop.set_target(target)
 
 func _on_spawn_projectile(projectile):
+	if disabled:
+		return
+	
 	add_child(projectile)

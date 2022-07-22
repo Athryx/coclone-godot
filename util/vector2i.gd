@@ -1,4 +1,4 @@
-extends Object
+extends Reference
 class_name Vector2i
 # vector2 with integer coordinates
 # NOTE: godot 4 has built in Vector2i, so this would not be necessary

@@ -6,7 +6,6 @@ export var grid_opacity_fallof := 0.7
 func _ready():
 	material_override.set_shader_param("opacity_fallof", grid_opacity_fallof)
 	
-	multimesh.transform_format = MultiMesh.TRANSFORM_3D
 	multimesh.instance_count = grid_size * grid_size
 	
 	var half_grid_size := grid_size as float / 2.0

@@ -17,9 +17,12 @@ func _on_GroundArea_input_event(input_camera, event, position, normal, shape_idx
 	if event is InputEventMouseButton and event.pressed and event.button_index == 1:
 		var pos2d := Util.vector3_to_vector2(position)
 		
-		if map.is_valid_map_pos(pos2d):
+		if map.is_valid_spawn_pos(pos2d):
 			var troop := gunner.instance()
 			map.spawn_troop(pos2d, troop)
+		else:
+			map.show_valid_spawn_overlay()
+		
 	elif event is InputEventMouseMotion and grid_enabled:
 		var pos2d := Util.vector3_to_vector2(position)
 		var tile_pos_center := Util.round_to_tile_pos(pos2d) + Vector2(0.5, 0.5)

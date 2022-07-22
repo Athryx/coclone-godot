@@ -8,6 +8,11 @@ export var building_name := ""
 # Only square footprints are supported
 export var footprint_size := 3
 
+# the width of the region that troops can't be placed in
+# set to a negative number to allow troops to be placed on this building
+# this width is measured from the edge of the footprint
+export var spawn_box_width := 1
+
 # The size of the building's hitbox in tiles (hitbox obstructs units from walking through)
 # Only square hitboxes are supported
 export var hitbox_size := 3.0
@@ -50,6 +55,8 @@ signal destroyed
 
 signal spawn_projectile(projectile)
 
+const TileBounds = preload("res://util/tile_bounds.gd")
+
 func _ready():
 	var half_footprint := footprint_size as float / 2.0
 	var x := x_position as float + half_footprint
@@ -64,12 +71,27 @@ func corner_position() -> Vector2i:
 	var half_footprint := footprint_size as float / 2.0
 	return Util.position_to_tile_pos(position() - Vector2(half_footprint, half_footprint))
 
+func footprint_bounds() -> TileBounds:
+	var min_corner := corner_position()
+	var max_corner := Vector2im.add(min_corner, Vector2i.new(footprint_size, footprint_size))
+	return TileBounds.new(min_corner, max_corner)
+
 func position() -> Vector2:
 	return Vector2(global_transform.origin.x, global_transform.origin.z)
 
 func aim_position() -> Vector3:
 	var position := position()
 	return Vector3(position.x, aim_pos_height, position.y)
+
+# returns tile bounds which show the min and max corner of the spawn box,
+# otherwise returns null if the building doesn't have a spawn box
+func spawn_box_bounds():
+	if spawn_box_width < 0:
+		return null
+	
+	var bounds = footprint_bounds()
+	bounds.offset(spawn_box_width)
+	return bounds
 
 # gets the distance from the given point to the buildings target box
 func target_dist(position: Vector2) -> float:

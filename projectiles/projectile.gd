@@ -49,6 +49,7 @@ func _ready():
 		target.connect("destroyed", self, "_on_target_destroyed", [], CONNECT_ONESHOT)
 	else:
 		target_point = aim_position_of_target(target)
+	look_at(target_position(), Vector3(0.0, 1.0, 0.0))
 
 func _physics_process(delta):
 	# rotate towards target

@@ -1,7 +1,19 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://map.gd" type="Script" id=1]
 [ext_resource path="res://buildings/light_platform.tscn" type="PackedScene" id=2]
+
+[sub_resource type="SpatialMaterial" id=3]
+flags_transparent = true
+albedo_color = Color( 1, 0.290196, 0, 0 )
+
+[sub_resource type="PlaneMesh" id=2]
+size = Vector2( 1, 0.1 )
+center_offset = Vector3( 0.5, 0, 0 )
+
+[sub_resource type="MultiMesh" id=1]
+transform_format = 1
+mesh = SubResource( 2 )
 
 [node name="Map" type="Spatial"]
 script = ExtResource( 1 )
@@ -33,3 +45,17 @@ y_position = 40
 [node name="LightPlatform7" parent="." instance=ExtResource( 2 )]
 x_position = 17
 y_position = 62
+
+[node name="LightPlatform8" parent="." instance=ExtResource( 2 )]
+x_position = 1
+y_position = 3
+
+[node name="SpawnZoneMesh" type="MultiMeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.01, 0 )
+material_override = SubResource( 3 )
+multimesh = SubResource( 1 )
+
+[node name="OpacityTween" type="Tween" parent="SpawnZoneMesh"]
+
+[node name="OpacityTimer" type="Timer" parent="SpawnZoneMesh"]
+one_shot = true

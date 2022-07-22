@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://buildings/building.gd" type="Script" id=1]
 [ext_resource path="res://damage_range.gd" type="Script" id=2]
@@ -7,6 +7,7 @@
 [ext_resource path="res://assets/buildings/light_platform/lvl1_machine_gun.glb" type="PackedScene" id=5]
 [ext_resource path="res://aimer.gd" type="Script" id=6]
 [ext_resource path="res://assets/buildings/light_platform/lvl1_base.glb" type="PackedScene" id=7]
+[ext_resource path="res://assets/footprints/footprint_3x3.glb" type="PackedScene" id=8]
 
 [sub_resource type="CubeMesh" id=2]
 
@@ -39,17 +40,20 @@ rotate_speed_elevation = 1.0
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.057, 0 )
 
 [node name="ProjectileSpawner" type="Spatial" parent="AliveMesh/Aimer"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.221931, -1.75841 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.282166, -2.03656 )
 script = ExtResource( 3 )
 initial_wait_time = 0.5
-refire_time = 0.3
+refire_time = 0.15
 projectile = ExtResource( 4 )
 
 [node name="lvl1_base" parent="AliveMesh" instance=ExtResource( 7 )]
 
+[node name="footprint_3x3" parent="." instance=ExtResource( 8 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.01, 0 )
+
 [connection signal="destroyed" from="." to="DamageRange" method="disable"]
-[connection signal="target_acquired" from="DamageRange" to="AliveMesh/Aimer/ProjectileSpawner" method="set_target"]
 [connection signal="target_acquired" from="DamageRange" to="AliveMesh/Aimer" method="set_target"]
-[connection signal="target_lost" from="DamageRange" to="AliveMesh/Aimer/ProjectileSpawner" method="set_target"]
+[connection signal="target_acquired" from="DamageRange" to="AliveMesh/Aimer/ProjectileSpawner" method="set_target"]
 [connection signal="target_lost" from="DamageRange" to="AliveMesh/Aimer" method="set_target"]
+[connection signal="target_lost" from="DamageRange" to="AliveMesh/Aimer/ProjectileSpawner" method="set_target"]
 [connection signal="spawn_projectile" from="AliveMesh/Aimer/ProjectileSpawner" to="." method="emit_spawn_projectile"]

@@ -21,6 +21,7 @@ shader = SubResource( 2 )
 shader_param/opacity_fallof = null
 
 [sub_resource type="MultiMesh" id=1]
+transform_format = 1
 mesh = ExtResource( 2 )
 
 [node name="Grid" type="MultiMeshInstance"]

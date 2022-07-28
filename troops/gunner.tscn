@@ -2,16 +2,18 @@
 
 [ext_resource path="res://troops/troop.gd" type="Script" id=1]
 [ext_resource path="res://projectiles/bullet.tscn" type="PackedScene" id=2]
-[ext_resource path="res://projectile_spawner.gd" type="Script" id=3]
+[ext_resource path="res://projectiles/projectile_spawner.gd" type="Script" id=3]
 
 [sub_resource type="CapsuleMesh" id=1]
 
 [node name="Troop" type="Spatial" groups=["needs_disable"]]
 script = ExtResource( 1 )
+troop_name = "Gunner"
 max_health = 50
 move_speed = 4.0
 approach_distance = 3.0
 aim_pos_height = 1.0
+preview_size = 2.0
 
 [node name="MeshInstance" type="MeshInstance" parent="."]
 transform = Transform( 0.5, 0, 0, 0, -2.18557e-08, -0.5, 0, 0.5, -2.18557e-08, 0, 0.824866, 0 )
@@ -22,8 +24,9 @@ material/0 = null
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.00471, 0 )
 script = ExtResource( 3 )
 initial_wait_time = 0.5
-refire_time = 0.3
+refire_time = 0.2
 projectile = ExtResource( 2 )
+damage = 6
 
 [connection signal="target_acquired" from="." to="ProjectileSpawner" method="set_target"]
 [connection signal="target_lost" from="." to="ProjectileSpawner" method="set_target"]

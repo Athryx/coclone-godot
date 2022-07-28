@@ -24,6 +24,8 @@ export var damagebox_size := 3.0
 # how high up on the building projectiles will be aimed
 export var aim_pos_height := 0.0
 
+export var preview_size := 5.0
+
 export var max_health := 0
 onready var health := max_health
 

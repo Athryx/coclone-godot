@@ -1,8 +1,8 @@
 [gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://buildings/building.gd" type="Script" id=1]
-[ext_resource path="res://damage_range.gd" type="Script" id=2]
-[ext_resource path="res://projectile_spawner.gd" type="Script" id=3]
+[ext_resource path="res://buildings/damage_range.gd" type="Script" id=2]
+[ext_resource path="res://projectiles/projectile_spawner.gd" type="Script" id=3]
 [ext_resource path="res://projectiles/bullet.tscn" type="PackedScene" id=4]
 [ext_resource path="res://assets/buildings/light_platform/lvl1_machine_gun.glb" type="PackedScene" id=5]
 [ext_resource path="res://aimer.gd" type="Script" id=6]
@@ -40,11 +40,12 @@ rotate_speed_elevation = 1.0
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.057, 0 )
 
 [node name="ProjectileSpawner" type="Spatial" parent="AliveMesh/Aimer"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.282166, -2.03656 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.29244, -2.02756 )
 script = ExtResource( 3 )
 initial_wait_time = 0.5
-refire_time = 0.15
+refire_time = 0.2
 projectile = ExtResource( 4 )
+damage = 10
 
 [node name="lvl1_base" parent="AliveMesh" instance=ExtResource( 7 )]
 

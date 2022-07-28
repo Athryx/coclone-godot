@@ -193,6 +193,7 @@ func spawn_troop(position: Vector2, troop):
 	troop.connect("needs_target", self, "_on_needs_target", [troop])
 	troop.connect("spawn_projectile", self, "_on_spawn_projectile")
 	add_child(troop)
+	building_range_map.new_troop_at(troop, troop.position())
 
 # called when the attack has finished to stop troops and buildings from moving or shooting
 func disable():

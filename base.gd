@@ -8,8 +8,9 @@ export var attack_time := 180
 onready var map = $Map
 onready var camera = $Camera
 onready var grid = $Grid
-onready var battle_info = $BattleInfo
 onready var battle_timer = $BattleTimer
+onready var battle_info = $BattleInfo
+onready var troop_bar = $TroopBar
 
 enum AttackState {
 	SCOUTING,
@@ -30,12 +31,13 @@ func _on_GroundArea_input_event(input_camera, event, position, normal, shape_idx
 		var pos2d := Util.vector3_to_vector2(position)
 		
 		if map.is_valid_spawn_pos(pos2d):
-			var troop := gunner.instance()
-			map.spawn_troop(pos2d, troop)
-			
-			if attack_state == AttackState.SCOUTING:
-				attack_state = AttackState.ATTACKING
-				battle_timer.start()
+			var troop = troop_bar.get_current_troop()
+			if troop != null:
+				map.spawn_troop(pos2d, troop)
+				
+				if attack_state == AttackState.SCOUTING:
+					attack_state = AttackState.ATTACKING
+					battle_timer.start()
 		else:
 			map.show_valid_spawn_overlay()
 		

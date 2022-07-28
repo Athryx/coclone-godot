@@ -1,4 +1,6 @@
-extends Panel
+tool
+extends HudPanel
+class_name BattleInfo
 
 onready var percent_destruction_label: Label = $PercentDestruction
 

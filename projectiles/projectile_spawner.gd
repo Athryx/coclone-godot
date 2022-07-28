@@ -10,6 +10,9 @@ export var refire_time := 0.0
 # the root node should be an instance of Projectile
 export(PackedScene) var projectile: PackedScene
 
+# damage done by each projectile
+export var damage := 0
+
 signal spawn_projectile(projectile)
 
 var target = null
@@ -32,6 +35,7 @@ func set_target(target = null):
 func _on_timer_timeout():
 	timer.start(refire_time)
 	var projectile_instance = projectile.instance()
+	projectile_instance.damage = damage
 	projectile_instance.start = self
 	projectile_instance.target = target
 	emit_signal("spawn_projectile", projectile_instance)

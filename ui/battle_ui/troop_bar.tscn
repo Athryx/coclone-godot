@@ -1,5 +1,40 @@
-[gd_scene format=2]
+[gd_scene load_steps=3 format=2]
 
-[node name="Control" type="Control"]
+[ext_resource path="res://ui/battle_ui/troop_bar.gd" type="Script" id=1]
+
+[sub_resource type="StyleBoxFlat" id=399]
+bg_color = Color( 0.262745, 0.262745, 0.262745, 0.443137 )
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+
+[node name="TroopBar" type="Panel"]
+margin_right = 500.0
+margin_bottom = 110.0
+custom_styles/panel = SubResource( 399 )
+script = ExtResource( 1 )
+
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
+scroll_horizontal_enabled = false
+
+[node name="MarginContainer" type="MarginContainer" parent="ScrollContainer"]
+margin_right = 20.0
+margin_bottom = 20.0
+custom_constants/margin_right = 10
+custom_constants/margin_top = 10
+custom_constants/margin_left = 10
+custom_constants/margin_bottom = 10
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/MarginContainer"]
+margin_left = 10.0
+margin_top = 10.0
+margin_right = 10.0
+margin_bottom = 10.0
+custom_constants/separation = 10

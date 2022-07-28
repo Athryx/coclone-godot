@@ -1,0 +1,31 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://troops/gunner.tscn" type="PackedScene" id=1]
+[ext_resource path="res://buildings/light_platform.tscn" type="PackedScene" id=2]
+[ext_resource path="res://scene_preview_generator.gd" type="Script" id=3]
+[ext_resource path="res://coclone_environment.tres" type="Environment" id=4]
+
+[sub_resource type="World" id=1]
+environment = ExtResource( 4 )
+
+[node name="ScenePreviewGenerator" type="Node"]
+script = ExtResource( 3 )
+preview_scenes = [ ExtResource( 1 ), ExtResource( 2 ) ]
+
+[node name="Viewport" type="Viewport" parent="."]
+size = Vector2( 100, 80 )
+own_world = true
+world = SubResource( 1 )
+transparent_bg = true
+render_target_v_flip = true
+render_target_update_mode = 3
+gui_disable_input = true
+
+[node name="Camera" type="Camera" parent="Viewport"]
+transform = Transform( -0.707107, 0.298836, -0.640857, 0, 0.906308, 0.422618, 0.707107, 0.298836, -0.640857, -3.5, 2.308, -3.5 )
+projection = 1
+current = true
+size = 5.0
+
+[node name="DirectionalLight" type="DirectionalLight" parent="Viewport"]
+transform = Transform( 0.819152, -0.519837, -0.242404, -3.69465e-08, -0.422618, 0.906308, -0.573577, -0.742404, -0.346189, 0, 0, 0 )

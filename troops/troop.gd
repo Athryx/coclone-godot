@@ -1,6 +1,8 @@
 extends Spatial
 class_name Troop
 
+export var troop_name := ""
+
 export var max_health := 0
 onready var health := max_health
 
@@ -13,6 +15,8 @@ export var approach_distance := 0.0
 
 # how high up on the building projectiles will be aimed
 export var aim_pos_height := 0.0
+
+export var preview_size := 5.0
 
 signal destroyed
 
@@ -60,7 +64,6 @@ func tile() -> Vector2i:
 	return Util.position_to_tile_pos(position())
 
 func _ready():
-	building_range_map.new_troop_at(self, position())
 	if current_target == null:
 		emit_signal("needs_target")
 

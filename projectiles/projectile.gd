@@ -14,6 +14,9 @@ export var hit_dist := 0.01
 # if false, it will aim at the target's aim point
 export var hit_ground := false
 
+# damage is set by the projectile spawner
+var damage: int
+
 # start is a spatial
 var start
 

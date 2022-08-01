@@ -1,10 +1,5 @@
-extends Spatial
+extends "res://unit.gd"
 class_name Troop
-
-export var troop_name := ""
-
-export var max_health := 0
-onready var health := max_health
 
 # movement speed is in tiles per second
 export var move_speed := 0.0
@@ -12,15 +7,6 @@ export var move_speed := 0.0
 # how close the troop will approach buildings
 # this is the distance from their damage box
 export var approach_distance := 0.0
-
-# how high up on the building projectiles will be aimed
-export var aim_pos_height := 0.0
-
-export var preview_size := 5.0
-
-signal destroyed
-
-signal spawn_projectile(projectile)
 
 # signals sent when the unit is within range of the building, not when the ai picks a building to attack
 # used to control attacks
@@ -52,13 +38,6 @@ func set_target(building):
 	elif building != null:
 		current_target = building
 		current_target.connect("destroyed", self, "_on_current_target_destroyed", [], CONNECT_ONESHOT)
-
-func position() -> Vector2:
-	return Vector2(global_transform.origin.x, global_transform.origin.z)
-
-func aim_position() -> Vector3:
-	var position := position()
-	return Vector3(position.x, aim_pos_height, position.y)
 
 func tile() -> Vector2i:
 	return Util.position_to_tile_pos(position())
@@ -106,7 +85,3 @@ func disable():
 func _on_current_target_destroyed():
 	set_target(null)
 	emit_signal("needs_target")
-
-# used to propagate spawn projectile from chile nodes within the scene
-func emit_spawn_projectile(projectile):
-	emit_signal("spawn_projectile", projectile)

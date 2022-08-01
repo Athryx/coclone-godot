@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=2]
 
-[ext_resource path="res://ui/battle_ui/troop_bar.gd" type="Script" id=1]
+[ext_resource path="res://ui/unit_bar.gd" type="Script" id=1]
 
 [sub_resource type="StyleBoxFlat" id=399]
 bg_color = Color( 0.262745, 0.262745, 0.262745, 0.443137 )

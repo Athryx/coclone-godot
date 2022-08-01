@@ -20,7 +20,7 @@ var damage: int
 # start is a spatial
 var start
 
-# target is either a troop or a building
+# target is a unit
 var target
 
 # only used for non seeking projectiles
@@ -76,5 +76,5 @@ func _on_hit(target, hit_target: bool):
 	pass
 
 func _on_target_destroyed():
-	target_point = Util.vector2_to_vector3(target.position())
+	target_point = target.aim_position()
 	seeking = false

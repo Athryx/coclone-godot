@@ -1,9 +1,9 @@
 extends Spatial
 
-const gunner = preload("res://troops/gunner.tscn")
-
 # maximum duration of the attack in seconds
 export var attack_time := 180
+
+const Gunner = preload("res://troops/gunner.tscn")
 
 onready var map = $Map
 onready var camera = $Camera
@@ -31,7 +31,7 @@ func _on_GroundArea_input_event(input_camera, event, position, normal, shape_idx
 		var pos2d := Util.vector3_to_vector2(position)
 		
 		if map.is_valid_spawn_pos(pos2d):
-			var troop = troop_bar.get_current_troop()
+			var troop = troop_bar.get_current_unit()
 			if troop != null:
 				map.spawn_troop(pos2d, troop)
 				
@@ -60,6 +60,9 @@ var building_destroyed_count := 0
 func _ready():
 	battle_timer.wait_time = attack_time
 	battle_info.set_time_remaining(attack_time)
+	
+	# temp
+	troop_bar.add_unit(Gunner, 50)
 	
 	var buildings := get_tree().get_nodes_in_group("buildings")
 	

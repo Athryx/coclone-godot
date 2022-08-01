@@ -1,8 +1,5 @@
+extends "res://unit.gd"
 class_name Building
-extends Spatial
-
-# The name of the building in game
-export var building_name := ""
 
 # The size of the building's footprint in tiles
 # Only square footprints are supported
@@ -20,14 +17,6 @@ export var hitbox_size := 3.0
 # The size of the building's damage box in tiles (this is the box that units can target and shoot)
 # Only square damage boxes are supported
 export var damagebox_size := 3.0
-
-# how high up on the building projectiles will be aimed
-export var aim_pos_height := 0.0
-
-export var preview_size := 5.0
-
-export var max_health := 0
-onready var health := max_health
 
 # Determines when units will target this building
 enum TargetMode {
@@ -53,10 +42,6 @@ onready var alive_model = get_node(alive_model_node)
 export(NodePath) var destroyed_model_node: NodePath
 onready var destroyed_model = get_node(destroyed_model_node)
 
-signal destroyed
-
-signal spawn_projectile(projectile)
-
 const TileBounds = preload("res://util/tile_bounds.gd")
 
 func _ready():
@@ -77,13 +62,6 @@ func footprint_bounds() -> TileBounds:
 	var min_corner := corner_position()
 	var max_corner := Vector2im.add(min_corner, Vector2i.new(footprint_size, footprint_size))
 	return TileBounds.new(min_corner, max_corner)
-
-func position() -> Vector2:
-	return Vector2(global_transform.origin.x, global_transform.origin.z)
-
-func aim_position() -> Vector3:
-	var position := position()
-	return Vector3(position.x, aim_pos_height, position.y)
 
 # returns tile bounds which show the min and max corner of the spawn box,
 # otherwise returns null if the building doesn't have a spawn box
@@ -121,10 +99,3 @@ func do_damage(damage: int) -> bool:
 		destroyed_model.visible = true
 		return true
 	return false
-
-func is_destroyed() -> bool:
-	return health == 0
-
-# used to propagate spawn projectile from chile nodes within the scene
-func emit_spawn_projectile(projectile):
-	emit_signal("spawn_projectile", projectile)

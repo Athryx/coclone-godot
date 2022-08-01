@@ -13,7 +13,7 @@
 
 [node name="LightPlatform" type="Spatial" groups=["buildings"]]
 script = ExtResource( 1 )
-building_name = "Light Platform"
+unit_name = "Light Platform"
 aim_pos_height = 1.1
 max_health = 500
 alive_model_node = NodePath("AliveMesh")

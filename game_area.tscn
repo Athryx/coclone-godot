@@ -1,9 +1,10 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://scenery.tscn" type="PackedScene" id=1]
 [ext_resource path="res://camera.tscn" type="PackedScene" id=2]
 [ext_resource path="res://grid.tscn" type="PackedScene" id=3]
 [ext_resource path="res://game_area.gd" type="Script" id=4]
+[ext_resource path="res://coclone_environment.tres" type="Environment" id=5]
 
 [sub_resource type="BoxShape" id=1]
 extents = Vector3( 100, 1, 100 )
@@ -20,6 +21,12 @@ max_zoom = 70.0
 [node name="Grid" parent="." instance=ExtResource( 3 )]
 
 [node name="GroundArea" type="Area" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0 )
 
 [node name="CollisionShape" type="CollisionShape" parent="GroundArea"]
 shape = SubResource( 1 )
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = ExtResource( 5 )
+
+[connection signal="input_event" from="GroundArea" to="." method="_on_GroundArea_input_event"]

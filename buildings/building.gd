@@ -33,8 +33,10 @@ export(TargetMode) var target_mode := TargetMode.ALWAYS
 export var percent_contributor := true
 
 # position of the building on the map
-export var x_position := 0
-export var y_position := 0
+export var x_position := 0 setget set_x_position
+export var y_position := 0 setget set_y_position
+
+var corner_position := Vector2i.new(0, 0)
 
 export(NodePath) var alive_model_node: NodePath
 onready var alive_model = get_node(alive_model_node)
@@ -44,19 +46,30 @@ onready var destroyed_model = get_node(destroyed_model_node)
 
 const TileBounds = preload("res://util/tile_bounds.gd")
 
+func set_x_position(num: int):
+	x_position = num
+	corner_position.x = num
+
+func set_y_position(num: int):
+	y_position = num
+	corner_position.y = num
+
 func _ready():
 	var half_footprint := footprint_size as float / 2.0
-	var x := x_position as float + half_footprint
-	var y := y_position as float + half_footprint
+	var x := corner_position.x as float + half_footprint
+	var y := corner_position.y as float + half_footprint
 	global_transform.origin.x = x
 	global_transform.origin.z = y
 	
 	alive_model.visible = true
 	destroyed_model.visible = false
 
+func position() -> Vector2:
+	var half_footprint_size := footprint_size as float / 2.0
+	return corner_position.to_vector2() + Vector2(half_footprint_size, half_footprint_size)
+
 func corner_position() -> Vector2i:
-	var half_footprint := footprint_size as float / 2.0
-	return Util.position_to_tile_pos(position() - Vector2(half_footprint, half_footprint))
+	return corner_position
 
 func footprint_bounds() -> TileBounds:
 	var min_corner := corner_position()

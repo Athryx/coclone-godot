@@ -1,7 +1,6 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://map.gd" type="Script" id=1]
-[ext_resource path="res://buildings/light_platform.tscn" type="PackedScene" id=2]
 
 [sub_resource type="SpatialMaterial" id=3]
 flags_transparent = true
@@ -17,38 +16,6 @@ mesh = SubResource( 2 )
 
 [node name="Map" type="Spatial"]
 script = ExtResource( 1 )
-
-[node name="LightPlatform" parent="." instance=ExtResource( 2 )]
-x_position = 40
-y_position = 26
-
-[node name="LightPlatform2" parent="." instance=ExtResource( 2 )]
-x_position = 5
-y_position = 7
-
-[node name="LightPlatform3" parent="." instance=ExtResource( 2 )]
-x_position = 62
-y_position = 11
-
-[node name="LightPlatform4" parent="." instance=ExtResource( 2 )]
-x_position = 64
-y_position = 58
-
-[node name="LightPlatform5" parent="." instance=ExtResource( 2 )]
-x_position = 71
-y_position = 8
-
-[node name="LightPlatform6" parent="." instance=ExtResource( 2 )]
-x_position = 70
-y_position = 40
-
-[node name="LightPlatform7" parent="." instance=ExtResource( 2 )]
-x_position = 17
-y_position = 62
-
-[node name="LightPlatform8" parent="." instance=ExtResource( 2 )]
-x_position = 1
-y_position = 3
 
 [node name="SpawnZoneMesh" type="MultiMeshInstance" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.01, 0 )

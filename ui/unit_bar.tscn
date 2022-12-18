@@ -2,7 +2,7 @@
 
 [ext_resource path="res://ui/unit_bar.gd" type="Script" id=1]
 
-[sub_resource type="StyleBoxFlat" id=399]
+[sub_resource type="StyleBoxFlat" id=400]
 bg_color = Color( 0.262745, 0.262745, 0.262745, 0.443137 )
 border_width_left = 1
 border_width_top = 1
@@ -13,10 +13,10 @@ corner_radius_top_right = 20
 corner_radius_bottom_right = 20
 corner_radius_bottom_left = 20
 
-[node name="TroopBar" type="Panel"]
+[node name="UnitBar" type="Panel"]
 margin_right = 500.0
 margin_bottom = 110.0
-custom_styles/panel = SubResource( 399 )
+custom_styles/panel = SubResource( 400 )
 script = ExtResource( 1 )
 
 [node name="ScrollContainer" type="ScrollContainer" parent="."]

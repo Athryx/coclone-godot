@@ -23,19 +23,24 @@ const UnitIcon = preload("res://ui/unit_icon.tscn")
 
 onready var unit_container = $ScrollContainer/MarginContainer/HBoxContainer
 
-func add_unit(unit: PackedScene, count: int):
-	var unit_bar_unit := UnitBarUnit.new(unit, count)
-	var icon = UnitIcon.instance()
-	
-	unit_bar_unit.icon = icon
-	icon.unit = unit_bar_unit.unit
-	
-	icon.connect("clicked", self, "_on_unit_clicked", [unit_bar_unit])
-	
-	unit_container.add_child(icon)
-	icon.set_text(String(unit_bar_unit.count))
-	
-	units[unit.resource_path] = unit_bar_unit
+func add_unit(unit: PackedScene, count: int = 1):
+	if units.has(unit.resource_path):
+		var unit_bar_unit = units[unit.resource_path]
+		unit_bar_unit.count += count
+		unit_bar_unit.icon.set_text(String(unit_bar_unit.count))
+	else:
+		var unit_bar_unit := UnitBarUnit.new(unit, count)
+		var icon = UnitIcon.instance()
+		
+		unit_bar_unit.icon = icon
+		icon.unit = unit_bar_unit.unit
+		
+		icon.connect("clicked", self, "_on_unit_clicked", [unit_bar_unit])
+		
+		unit_container.add_child(icon)
+		icon.set_text(String(unit_bar_unit.count))
+		
+		units[unit.resource_path] = unit_bar_unit
 
 func _on_unit_clicked(unit: UnitBarUnit):
 	current_unit = unit
@@ -44,6 +49,9 @@ func get_current_unit():
 	if current_unit == null or current_unit.count == 0:
 		return null
 	
-	current_unit.count -= 1
-	current_unit.icon.set_text(String(current_unit.count))
 	return current_unit.unit.instance()
+
+func dec_current_unit():
+	if current_unit != null:
+		current_unit.count -= 1
+		current_unit.icon.set_text(String(current_unit.count))

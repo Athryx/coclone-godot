@@ -29,9 +29,10 @@ func _on_GroundArea_input_event(input_camera, event, position, normal, shape_idx
 			emit_signal("position_clicked", pos2d)
 	elif event is InputEventMouseMotion and grid_enabled:
 		var pos2d := Util.vector3_to_vector2(position)
-		var tile_pos_center := Util.round_to_tile_pos(pos2d) + Vector2(0.5, 0.5)
 		
-		if is_valid_position(tile_pos_center):
+		if is_valid_position(pos2d):
+			var tile_pos_center := Util.round_to_tile_pos(pos2d) + Vector2(0.5, 0.5)
+			
 			var tile_pos3d := Util.vector2_to_vector3(tile_pos_center)
 			var camera_direction: Vector3 = camera.camera_direction_vec()
 			grid.transform.origin = tile_pos3d - 10.0 * camera_direction

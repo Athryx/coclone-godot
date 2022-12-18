@@ -66,27 +66,14 @@ var building_range_map: BuildingRangeMap
 # a nonzero number means a unit can't be spawned on the tile
 var spawn_pos_map := []
 
+# 2d array of booleans for each tile
+# true means it is occupied by a building
+var footprint_map := []
+
 onready var spawn_pos_mesh_node = $SpawnZoneMesh
 onready var spawn_pos_mesh = $SpawnZoneMesh.multimesh
 
-func generate_spawn_pos_map():
-	var buildings := get_tree().get_nodes_in_group("buildings")
-	
-	for x in map_size:
-		spawn_pos_map.push_back([])
-		for y in map_size:
-			spawn_pos_map[x].push_back(0)
-	
-	for building in buildings:
-		var tile_bounds = building.spawn_box_bounds()
-		if tile_bounds == null:
-			continue
-		
-		clamp_tile_bounds(tile_bounds)
-		for x in range(tile_bounds.min_corner.x, tile_bounds.max_corner.x):
-			for y in range(tile_bounds.min_corner.y, tile_bounds.max_corner.y):
-				spawn_pos_map[x][y] += 1
-	
+func generate_spawn_pos_mesh():
 	# generate the outline mesh
 	# have to collect them in a separate array before setting the up the multimesh
 	var mesh_transforms := []
@@ -130,17 +117,42 @@ func get_spawn_mesh_transform(position: Vector2i, rotation: float) -> Transform:
 		Util.vector2_to_vector3(position.to_vector2())
 	)
 
-func clamp_tile_bounds(tile_bounds: TileBounds):
-	tile_bounds.min_corner = Vector2im.max(tile_bounds.min_corner, Vector2i.new(0, 0))
-	tile_bounds.max_corner = Vector2im.min(tile_bounds.max_corner, Vector2i.new(map_size, map_size))
-
 func _ready():
+	for x in map_size:
+		spawn_pos_map.push_back([])
+		footprint_map.push_back([])
+		for y in map_size:
+			spawn_pos_map[x].push_back(0)
+			footprint_map[x].push_back(false)
+
+# call this when all buildings have been added to the map to set it up for attack
+func finalize():
 	generate_building_dist_map()
 	building_range_map = BuildingRangeMap.new(get_tree().get_nodes_in_group("building_range"))
-	generate_spawn_pos_map()
+	generate_spawn_pos_mesh()
 	
 	for building in get_tree().get_nodes_in_group("buildings"):
 		building.connect("spawn_projectile", self, "_on_spawn_projectile")
+
+func add_building(building: Building) -> bool:
+	var footprint_bounds := building.footprint_bounds()
+	if not is_valid_footprint_tile_bounds(building.footprint_bounds()):
+		return false
+	
+	var spawn_bounds = building.spawn_box_bounds()
+	if spawn_bounds != null:
+		clamp_tile_bounds(spawn_bounds)
+		for x in spawn_bounds.xrange():
+			for y in spawn_bounds.yrange():
+				spawn_pos_map[x][y] += 1
+	
+	for x in footprint_bounds.xrange():
+		for y in footprint_bounds.yrange():
+			footprint_map[x][y] = true
+	
+	add_child(building)
+	
+	return true
 
 # returns true if the tile is within the map bounds
 func is_valid_tile_pos(tile: Vector2i) -> bool:
@@ -157,6 +169,24 @@ func is_valid_spawn_tile(tile: Vector2i) -> bool:
 func is_valid_spawn_pos(position: Vector2) -> bool:
 	var tile = Util.position_to_tile_pos(position)
 	return is_valid_spawn_tile(tile)
+
+func is_valid_tile_bounds(tile_bounds: TileBounds) -> bool:
+	return is_valid_tile_pos(tile_bounds.min_corner) and is_valid_tile_pos(Vector2im.sub(tile_bounds.max_corner, Vector2i.new(1, 1)))
+
+func is_valid_footprint_tile_bounds(tile_bounds: TileBounds) -> bool:
+	if not is_valid_tile_bounds(tile_bounds):
+		return false
+	
+	for x in tile_bounds.xrange():
+		for y in tile_bounds.yrange():
+			if footprint_map[x][y]:
+				return false
+	
+	return true
+
+func clamp_tile_bounds(tile_bounds: TileBounds):
+	tile_bounds.min_corner = Vector2im.max(tile_bounds.min_corner, Vector2i.new(0, 0))
+	tile_bounds.max_corner = Vector2im.min(tile_bounds.max_corner, Vector2i.new(map_size, map_size))
 
 onready var spawn_mesh_tween: Tween = $SpawnZoneMesh/OpacityTween
 onready var spawn_mesh_timer: Timer = $SpawnZoneMesh/OpacityTimer
@@ -180,6 +210,9 @@ func show_valid_spawn_overlay():
 		1.5
 	)
 	spawn_mesh_tween.start()
+
+func enable_valid_spawn_overlay():
+	spawn_pos_mesh_node.material_override.albedo_color.a = 0.6
 
 var disabled := false
 

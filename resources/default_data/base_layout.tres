@@ -1,0 +1,20 @@
+[gd_resource type="Resource" load_steps=3 format=2]
+
+[ext_resource path="res://resources/base_layout.gd" type="Script" id=1]
+[ext_resource path="res://buildings/light_platform.tscn" type="PackedScene" id=2]
+
+[resource]
+script = ExtResource( 1 )
+buildings = [ {
+"building": ExtResource( 2 ),
+"x": 23,
+"y": 37
+}, {
+"building": ExtResource( 2 ),
+"x": 5,
+"y": 20
+}, {
+"building": ExtResource( 2 ),
+"x": 58,
+"y": 40
+} ]

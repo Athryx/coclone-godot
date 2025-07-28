@@ -1,16 +1,16 @@
-extends Spatial
+extends Node3D
 class_name Unit
 
 # this class is inherited by both troop and building, and has functionality common to both
 
-export var unit_name := ""
+@export var unit_name := ""
 
-export var aim_pos_height := 0.0
+@export var aim_pos_height := 0.0
 
-export var preview_size := 5.0
+@export var preview_size := 5.0
 
-export var max_health := 0
-onready var health = max_health
+@export var max_health := 0
+@onready var health = max_health
 
 signal destroyed
 

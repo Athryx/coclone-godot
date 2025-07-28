@@ -1,4 +1,4 @@
-extends Reference
+extends RefCounted
 
 # both of these are maps from a Vector2i to a vector of damage ranges
 # range_map_edge is all tiles that are on the edge of a range,
@@ -12,7 +12,7 @@ func _init(ranges: Array):
 		
 		for x in range(tile_bounds.min_corner.x, tile_bounds.max_corner.x):
 			for y in range(tile_bounds.min_corner.y, tile_bounds.max_corner.y):
-				var tile := Vector2i.new(x, y).to_vector2()
+				var tile := Vector2(Vector2i(x, y))
 				
 				var xf := x as float
 				var yf := y as float
@@ -57,7 +57,7 @@ func moved(troop, start: Vector2, end: Vector2):
 	var end_tile := Util.position_to_tile_pos(end)
 	
 	var tiles_to_check = [start]
-	if not start_tile.equals(end_tile):
+	if start_tile != end_tile:
 		tiles_to_check.push_back(end)
 	
 	for position in tiles_to_check:

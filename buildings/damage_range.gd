@@ -1,7 +1,7 @@
-extends Spatial
+extends Node3D
 class_name DamageRange
 
-export var radius := 0.0
+@export var radius := 0.0
 
 signal target_acquired(troop)
 signal target_lost
@@ -44,7 +44,7 @@ func notify_troop_entered(troop):
 	if disabled:
 		return
 	
-	troop.connect("destroyed", self, "_on_target_destroyed", [troop], CONNECT_ONESHOT)
+	troop.connect("destroyed", Callable(self, "_on_target_destroyed").bind(troop), CONNECT_ONE_SHOT)
 	targets_in_range[troop] = null
 	if current_target == null:
 		set_current_target(troop)
@@ -62,19 +62,19 @@ func notify_troop_exited(troop):
 		else:
 			set_current_target(closest_target)
 	
-	troop.disconnect("destroyed", self, "_on_target_destroyed")
+	troop.disconnect("destroyed", Callable(self, "_on_target_destroyed"))
 
 # stops the damage range from doing anything
 # should be used when a building is destroyed for example
 func disable():
 	disabled = true
 	for troop in targets_in_range:
-		troop.disconnect("destroyed", self, "_on_target_destroyed")
+		troop.disconnect("destroyed", Callable(self, "_on_target_destroyed"))
 	
 	targets_in_range.clear()
 	
 	if current_target != null:
-		current_target.disconnect("destroyed", self, "_on_target_destroyed")
+		current_target.disconnect("destroyed", Callable(self, "_on_target_destroyed"))
 		set_current_target(null)
 
 func _on_target_destroyed(troop):

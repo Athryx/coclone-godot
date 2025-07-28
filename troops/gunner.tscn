@@ -6,7 +6,7 @@
 
 [sub_resource type="CapsuleMesh" id=1]
 
-[node name="Troop" type="Spatial" groups=["needs_disable"]]
+[node name="Troop" type="Node3D" groups=["needs_disable"]]
 script = ExtResource( 1 )
 unit_name = "Gunner"
 aim_pos_height = 1.0
@@ -15,13 +15,13 @@ max_health = 50
 move_speed = 4.0
 approach_distance = 3.0
 
-[node name="MeshInstance" type="MeshInstance" parent="."]
-transform = Transform( 0.5, 0, 0, 0, -2.18557e-08, -0.5, 0, 0.5, -2.18557e-08, 0, 0.824866, 0 )
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D( 0.5, 0, 0, 0, -2.18557e-08, -0.5, 0, 0.5, -2.18557e-08, 0, 0.824866, 0 )
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="ProjectileSpawner" type="Spatial" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.00471, 0 )
+[node name="ProjectileSpawner" type="Node3D" parent="."]
+transform = Transform3D( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.00471, 0 )
 script = ExtResource( 3 )
 initial_wait_time = 0.5
 refire_time = 0.2

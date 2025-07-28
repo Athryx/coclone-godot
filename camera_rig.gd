@@ -1,14 +1,14 @@
-extends Spatial
+extends Node3D
 
-export var pan_sensitivity := 1.0
-export var rotate_sensitivity := 0.03
+@export var pan_sensitivity := 1.0
+@export var rotate_sensitivity := 0.03
 
-export var zoom_sensitivity := 1.0
+@export var zoom_sensitivity := 1.0
 
-export var min_zoom := 3.0
-export var max_zoom := 40.0
+@export var min_zoom := 3.0
+@export var max_zoom := 40.0
 
-onready var camera = $Camera
+@onready var camera = $Camera3D
 
 func _ready():
 	camera.size = max_zoom

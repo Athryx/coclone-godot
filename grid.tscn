@@ -9,8 +9,8 @@ code = "shader_type spatial;
 uniform float opacity_fallof;
 
 void fragment() {
-	vec4 world_pos = CAMERA_MATRIX * vec4(VERTEX, 1.0);
-	vec3 model_pos = (inverse(WORLD_MATRIX) * world_pos).xyz;
+	vec4 world_pos = INV_VIEW_MATRIX * vec4(VERTEX, 1.0);
+	vec3 model_pos = (inverse(MODEL_MATRIX) * world_pos).xyz;
 	float center_dist = distance(model_pos, vec3(0.0));
 	
 	ALPHA = 1.0 / (1.0 + exp(opacity_fallof * center_dist));
@@ -24,7 +24,7 @@ shader_param/opacity_fallof = null
 transform_format = 1
 mesh = ExtResource( 2 )
 
-[node name="Grid" type="MultiMeshInstance"]
+[node name="Grid" type="MultiMeshInstance3D"]
 material_override = SubResource( 3 )
 multimesh = SubResource( 1 )
 script = ExtResource( 1 )

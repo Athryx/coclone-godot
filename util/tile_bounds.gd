@@ -1,12 +1,12 @@
-extends Reference
+extends RefCounted
 
 var min_corner: Vector2i
 var max_corner: Vector2i
 
 func _init(min_corner: Vector2i, max_corner: Vector2i):
 	assert(min_corner.x <= max_corner.x and min_corner.y <= max_corner.y)
-	self.min_corner = Vector2im.clone(min_corner)
-	self.max_corner = Vector2im.clone(max_corner)
+	self.min_corner = Vector2i(min_corner)
+	self.max_corner = Vector2i(max_corner)
 
 func offset(size: int):
 	min_corner.x -= size

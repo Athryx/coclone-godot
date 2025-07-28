@@ -5,7 +5,7 @@
 [ext_resource path="res://ui/unit_bar.tscn" type="PackedScene" id=3]
 [ext_resource path="res://map.tscn" type="PackedScene" id=4]
 
-[node name="BaseEditor" type="Spatial"]
+[node name="BaseEditor" type="Node3D"]
 script = ExtResource( 2 )
 
 [node name="Map" parent="." instance=ExtResource( 4 )]
@@ -16,9 +16,9 @@ script = ExtResource( 2 )
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = 10.0
-margin_top = -120.0
-margin_right = -10.0
-margin_bottom = -10.0
+offset_left = 10.0
+offset_top = -120.0
+offset_right = -10.0
+offset_bottom = -10.0
 
 [connection signal="position_clicked" from="GameArea" to="." method="_on_GameArea_position_clicked"]

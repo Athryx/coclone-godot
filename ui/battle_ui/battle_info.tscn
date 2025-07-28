@@ -1,9 +1,9 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=3 format=3 uid="uid://b7pe7vn5rjdic"]
 
-[ext_resource path="res://ui/battle_ui/battle_info.gd" type="Script" id=2]
+[ext_resource type="Script" uid="uid://bywt87axf1am3" path="res://ui/battle_ui/battle_info.gd" id="2"]
 
-[sub_resource type="StyleBoxFlat" id=399]
-bg_color = Color( 0.262745, 0.262745, 0.262745, 0.443137 )
+[sub_resource type="StyleBoxFlat" id="399"]
+bg_color = Color(0.262745, 0.262745, 0.262745, 0.443137)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
@@ -14,32 +14,35 @@ corner_radius_bottom_right = 20
 corner_radius_bottom_left = 20
 
 [node name="BattleInfo" type="Panel"]
-margin_right = 140.0
-margin_bottom = 110.0
-custom_styles/panel = SubResource( 399 )
-script = ExtResource( 2 )
+offset_right = 140.0
+offset_bottom = 110.0
+theme_override_styles/panel = SubResource("399")
+script = ExtResource("2")
 
 [node name="PercentDestruction" type="Label" parent="."]
+layout_mode = 0
 anchor_right = 1.0
-margin_top = 50.0
-margin_bottom = 70.0
+offset_top = 50.0
+offset_bottom = 70.0
 text = "0.00 %"
-align = 1
-valign = 1
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="TimeRemaing" type="Label" parent="."]
+layout_mode = 0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_top = -23.0
-margin_bottom = -3.0
+offset_top = -23.0
+offset_bottom = -3.0
 text = "0 s"
-align = 1
-valign = 1
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="HSeparator" type="HSeparator" parent="."]
+layout_mode = 0
 anchor_top = 0.5
 anchor_right = 1.0
 anchor_bottom = 0.5
-margin_top = 21.0
-margin_bottom = 25.0
+offset_top = 21.0
+offset_bottom = 25.0

@@ -1,18 +1,18 @@
-extends Spatial
+extends Node3D
 class_name Projectile
 
 # speed is in tiles per second
-export var speed := 0.0
+@export var speed := 0.0
 
 # weather or not the projectile follows the target, or just aims for it's initial position
-export var seeking := true
+@export var seeking := true
 
 # once the projectile is within this distance of the target, it is considered a hit
-export var hit_dist := 0.01
+@export var hit_dist := 0.01
 
 # if true, will aim at the target at y = 0, which means it will hit the ground
 # if false, it will aim at the target's aim point
-export var hit_ground := false
+@export var hit_ground := false
 
 # damage is set by the projectile spawner
 var damage: int
@@ -49,7 +49,7 @@ func target_vec() -> Vector3:
 func _ready():
 	global_transform.origin = start.global_transform.origin
 	if seeking:
-		target.connect("destroyed", self, "_on_target_destroyed", [], CONNECT_ONESHOT)
+		target.connect("destroyed", Callable(self, "_on_target_destroyed").bind(), CONNECT_ONE_SHOT)
 	else:
 		target_point = aim_position_of_target(target)
 	look_at(target_position(), Vector3(0.0, 1.0, 0.0))

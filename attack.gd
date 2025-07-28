@@ -1,14 +1,14 @@
-extends Spatial
+extends Node3D
 
 # maximum duration of the attack in seconds
-export var attack_time := 180
+@export var attack_time := 180
 
 const Gunner = preload("res://troops/gunner.tscn")
 
-onready var map = $Map
-onready var battle_timer = $BattleTimer
-onready var battle_info = $BattleInfo
-onready var troop_bar = $TroopBar
+@onready var map = $Map
+@onready var battle_timer = $BattleTimer
+@onready var battle_info = $BattleInfo
+@onready var troop_bar = $TroopBar
 
 enum AttackState {
 	SCOUTING,
@@ -40,7 +40,7 @@ func _ready():
 	battle_info.set_time_remaining(attack_time)
 	
 	for building in PlayerData.player.base_layout.get_buildings():
-		map.add_building(building.instance())
+		map.add_building(building.instantiate())
 	
 	map.finalize()
 	
@@ -52,7 +52,7 @@ func _ready():
 	for building in buildings:
 		if building.percent_contributor:
 			total_building_count += 1
-			building.connect("destroyed", self, "_on_building_destroyed", [], CONNECT_ONESHOT)
+			building.connect("destroyed", Callable(self, "_on_building_destroyed").bind(), CONNECT_ONE_SHOT)
 
 func _process(delta):
 	if attack_state == AttackState.ATTACKING:

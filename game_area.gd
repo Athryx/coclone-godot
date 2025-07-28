@@ -1,13 +1,13 @@
-extends Spatial
+extends Node3D
 # game area is used in any scene that needs to view or manipulate the base
 # it provides camera controls and the scenery
 
-export var map_size := 75
+@export var map_size := 75
 
 signal position_clicked(position)
 
-onready var camera = $Camera
-onready var grid = $Grid
+@onready var camera = $Camera3D
+@onready var grid = $Grid
 
 var grid_enabled := true
 

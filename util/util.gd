@@ -24,16 +24,16 @@ static func position_to_tile_pos(position: Vector2) -> Vector2i:
 	else:
 		y = position.y as int
 	
-	return Vector2i.new(x, y)
+	return Vector2i(x, y)
 
 static func round_to_tile_pos(position: Vector2) -> Vector2:
-	return position_to_tile_pos(position).to_vector2()
+	return Vector2(position_to_tile_pos(position))
 
 static func tile_bounds(center: Vector2, size: float) -> TileBounds:
 	var size_vec := Vector2(size, size)
 	return TileBounds.new(
 		position_to_tile_pos(center - size_vec),
-		Vector2im.add(position_to_tile_pos(center + size_vec), Vector2i.new(1, 1))
+		position_to_tile_pos(center + size_vec) + Vector2i(1, 1)
 	)
 
 static func signed_angle_between(a: Vector2, b: Vector2) -> float:

@@ -1,9 +1,9 @@
-extends Spatial
+extends Node3D
 
 const Map = preload("res://map.gd")
 
-onready var building_bar: UnitBar = $BuildingBar
-onready var map: Map = $Map
+@onready var building_bar: UnitBar = $BuildingBar
+@onready var map: Map = $Map
 
 func _ready():
 	for building in PlayerData.player.buildings:

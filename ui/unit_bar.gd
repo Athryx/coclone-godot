@@ -1,9 +1,9 @@
-tool
+@tool
 extends HudPanel
 class_name UnitBar
 
 class UnitBarUnit:
-	extends Reference
+	extends RefCounted
 	var unit: PackedScene
 	var count: int
 	
@@ -21,7 +21,7 @@ var current_unit = null
 
 const UnitIcon = preload("res://ui/unit_icon.tscn")
 
-onready var unit_container = $ScrollContainer/MarginContainer/HBoxContainer
+@onready var unit_container = $ScrollContainer/MarginContainer/HBoxContainer
 
 func add_unit(unit: PackedScene, count: int = 1):
 	if units.has(unit.resource_path):
@@ -30,15 +30,15 @@ func add_unit(unit: PackedScene, count: int = 1):
 		unit_bar_unit.icon.set_text(String(unit_bar_unit.count))
 	else:
 		var unit_bar_unit := UnitBarUnit.new(unit, count)
-		var icon = UnitIcon.instance()
+		var icon = UnitIcon.instantiate()
 		
 		unit_bar_unit.icon = icon
 		icon.unit = unit_bar_unit.unit
 		
-		icon.connect("clicked", self, "_on_unit_clicked", [unit_bar_unit])
+		icon.connect("clicked", Callable(self, "_on_unit_clicked").bind(unit_bar_unit))
 		
 		unit_container.add_child(icon)
-		icon.set_text(String(unit_bar_unit.count))
+		icon.set_text(str(unit_bar_unit.count))
 		
 		units[unit.resource_path] = unit_bar_unit
 
@@ -49,9 +49,9 @@ func get_current_unit():
 	if current_unit == null or current_unit.count == 0:
 		return null
 	
-	return current_unit.unit.instance()
+	return current_unit.unit.instantiate()
 
 func dec_current_unit():
 	if current_unit != null:
 		current_unit.count -= 1
-		current_unit.icon.set_text(String(current_unit.count))
+		current_unit.icon.set_text(str(current_unit.count))

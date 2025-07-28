@@ -1,10 +1,10 @@
-extends MultiMeshInstance
+extends MultiMeshInstance3D
 
-export var grid_size := 11
-export var grid_opacity_fallof := 0.7
+@export var grid_size := 11
+@export var grid_opacity_fallof := 0.7
 
 func _ready():
-	material_override.set_shader_param("opacity_fallof", grid_opacity_fallof)
+	material_override.set_shader_parameter("opacity_fallof", grid_opacity_fallof)
 	
 	multimesh.instance_count = grid_size * grid_size
 	
@@ -18,5 +18,5 @@ func _ready():
 			var index: int = z + x * grid_size
 			
 			var pos := Vector3(xpos, 0.0, zpos)
-			var instance_transform := Transform(Basis(), pos)
+			var instance_transform := Transform3D(Basis(), pos)
 			multimesh.set_instance_transform(index, instance_transform)

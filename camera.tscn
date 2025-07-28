@@ -2,11 +2,11 @@
 
 [ext_resource path="res://camera_rig.gd" type="Script" id=1]
 
-[node name="CameraRig" type="Spatial"]
+[node name="CameraRig" type="Node3D"]
 script = ExtResource( 1 )
 min_zoom = 10.0
 
-[node name="Camera" type="Camera" parent="."]
-transform = Transform( 1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 43, 43 )
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D( 1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 43, 43 )
 projection = 1
 size = 40.0

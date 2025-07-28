@@ -1,13 +1,13 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=7 format=3 uid="uid://7ji82bmhmnpf"]
 
-[ext_resource path="res://game_area.tscn" type="PackedScene" id=1]
-[ext_resource path="res://attack.gd" type="Script" id=3]
-[ext_resource path="res://ui/unit_bar.tscn" type="PackedScene" id=4]
-[ext_resource path="res://map.tscn" type="PackedScene" id=6]
-[ext_resource path="res://ui/battle_ui/battle_info.tscn" type="PackedScene" id=8]
+[ext_resource type="PackedScene" uid="uid://brceldhrfa7ts" path="res://game_area.tscn" id="1"]
+[ext_resource type="Script" uid="uid://61j1sgqyekcw" path="res://attack.gd" id="3"]
+[ext_resource type="PackedScene" uid="uid://b7c1ux4ujb2sm" path="res://ui/unit_bar.tscn" id="4"]
+[ext_resource type="PackedScene" uid="uid://iq85nxbw2vy1" path="res://map.tscn" id="6"]
+[ext_resource type="PackedScene" uid="uid://b7pe7vn5rjdic" path="res://ui/battle_ui/battle_info.tscn" id="8"]
 
-[sub_resource type="StyleBoxFlat" id=399]
-bg_color = Color( 0.262745, 0.262745, 0.262745, 0.443137 )
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0c0jm"]
+bg_color = Color(0.262745, 0.262745, 0.262745, 0.443137)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
@@ -17,48 +17,37 @@ corner_radius_top_right = 20
 corner_radius_bottom_right = 20
 corner_radius_bottom_left = 20
 
-[sub_resource type="StyleBoxFlat" id=400]
-bg_color = Color( 0.262745, 0.262745, 0.262745, 0.443137 )
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-corner_radius_top_left = 20
-corner_radius_top_right = 20
-corner_radius_bottom_right = 20
-corner_radius_bottom_left = 20
+[node name="Attack" type="Node3D"]
+script = ExtResource("3")
 
-[node name="Attack" type="Spatial"]
-script = ExtResource( 3 )
+[node name="GameArea" parent="." instance=ExtResource("1")]
 
-[node name="GameArea" parent="." instance=ExtResource( 1 )]
-
-[node name="Map" parent="." instance=ExtResource( 6 )]
+[node name="Map" parent="." instance=ExtResource("6")]
 
 [node name="BattleTimer" type="Timer" parent="."]
-process_mode = 0
 one_shot = true
 
-[node name="TroopBar" parent="." instance=ExtResource( 4 )]
+[node name="TroopBar" parent="." instance=ExtResource("4")]
+anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = 20.0
-margin_top = -130.0
-margin_right = -180.0
-margin_bottom = -20.0
-custom_styles/panel = SubResource( 399 )
+offset_left = 20.0
+offset_top = -130.0
+offset_right = -180.0
+offset_bottom = -20.0
 
-[node name="BattleInfo" parent="." instance=ExtResource( 8 )]
+[node name="BattleInfo" parent="." instance=ExtResource("8")]
+anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = -160.0
-margin_top = -130.0
-margin_right = -20.0
-margin_bottom = -20.0
-custom_styles/panel = SubResource( 400 )
+offset_left = -160.0
+offset_top = -130.0
+offset_right = -20.0
+offset_bottom = -20.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_0c0jm")
 
 [connection signal="position_clicked" from="GameArea" to="." method="_on_GameArea_position_clicked"]
 [connection signal="timeout" from="BattleTimer" to="." method="_on_BattleTimer_timeout"]

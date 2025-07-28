@@ -1,55 +1,55 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=10 format=3 uid="uid://cun4cy2nkmc4i"]
 
-[ext_resource path="res://buildings/building.gd" type="Script" id=1]
-[ext_resource path="res://buildings/damage_range.gd" type="Script" id=2]
-[ext_resource path="res://projectiles/projectile_spawner.gd" type="Script" id=3]
-[ext_resource path="res://projectiles/bullet.tscn" type="PackedScene" id=4]
-[ext_resource path="res://assets/buildings/light_platform/lvl1_machine_gun.glb" type="PackedScene" id=5]
-[ext_resource path="res://aimer.gd" type="Script" id=6]
-[ext_resource path="res://assets/buildings/light_platform/lvl1_base.glb" type="PackedScene" id=7]
-[ext_resource path="res://assets/footprints/footprint_3x3.glb" type="PackedScene" id=8]
+[ext_resource type="Script" uid="uid://b8ux2rx04oois" path="res://buildings/building.gd" id="1"]
+[ext_resource type="Script" uid="uid://cth2miv283nlo" path="res://buildings/damage_range.gd" id="2"]
+[ext_resource type="Script" uid="uid://c45qmbbaysqou" path="res://projectiles/projectile_spawner.gd" id="3"]
+[ext_resource type="PackedScene" path="res://projectiles/bullet.tscn" id="4"]
+[ext_resource type="PackedScene" uid="uid://bsoh14a3abtm" path="res://assets/buildings/light_platform/lvl1_machine_gun.glb" id="5"]
+[ext_resource type="Script" uid="uid://coeltgg5dv1rb" path="res://aimer.gd" id="6"]
+[ext_resource type="PackedScene" uid="uid://bi1kqaia0t2tc" path="res://assets/buildings/light_platform/lvl1_base.glb" id="7"]
+[ext_resource type="PackedScene" uid="uid://dtc84e1bidkef" path="res://assets/footprints/footprint_3x3.glb" id="8"]
 
-[sub_resource type="CubeMesh" id=2]
+[sub_resource type="BoxMesh" id="2"]
 
-[node name="LightPlatform" type="Spatial" groups=["buildings"]]
-script = ExtResource( 1 )
-unit_name = "Light Platform"
-aim_pos_height = 1.1
-max_health = 500
+[node name="LightPlatform" type="Node3D" groups=["buildings"]]
+script = ExtResource("1")
 alive_model_node = NodePath("AliveMesh")
 destroyed_model_node = NodePath("DestroyedMesh")
+unit_name = "Light3D Platform"
+aim_pos_height = 1.1
+max_health = 500
 
-[node name="DamageRange" type="Spatial" parent="." groups=["building_range", "needs_disable"]]
-script = ExtResource( 2 )
+[node name="DamageRange" type="Node3D" parent="." groups=["building_range", "needs_disable"]]
+script = ExtResource("2")
 radius = 10.0
 
-[node name="DestroyedMesh" type="MeshInstance" parent="."]
-transform = Transform( 1.5, 0, 0, 0, 0.1, 0, 0, 0, 1.5, 0, 0, 0 )
-mesh = SubResource( 2 )
+[node name="DestroyedMesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.5, 0, 0, 0, 0.1, 0, 0, 0, 1.5, 0, 0, 0)
+mesh = SubResource("2")
 
-[node name="AliveMesh" type="Spatial" parent="."]
+[node name="AliveMesh" type="Node3D" parent="."]
 
-[node name="Aimer" type="Spatial" parent="AliveMesh"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.05666, 0 )
-script = ExtResource( 6 )
+[node name="Aimer" type="Node3D" parent="AliveMesh"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.05666, 0)
+script = ExtResource("6")
 rotate_speed_azimuth = 6.5
 rotate_speed_elevation = 1.0
 
-[node name="lvl1_machine_gun" parent="AliveMesh/Aimer" instance=ExtResource( 5 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.057, 0 )
+[node name="lvl1_machine_gun" parent="AliveMesh/Aimer" instance=ExtResource("5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.057, 0)
 
-[node name="ProjectileSpawner" type="Spatial" parent="AliveMesh/Aimer"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.29244, -2.02756 )
-script = ExtResource( 3 )
+[node name="ProjectileSpawner" type="Node3D" parent="AliveMesh/Aimer"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.29244, -2.02756)
+script = ExtResource("3")
 initial_wait_time = 0.5
 refire_time = 0.2
-projectile = ExtResource( 4 )
+projectile = ExtResource("4")
 damage = 10
 
-[node name="lvl1_base" parent="AliveMesh" instance=ExtResource( 7 )]
+[node name="lvl1_base" parent="AliveMesh" instance=ExtResource("7")]
 
-[node name="footprint_3x3" parent="." instance=ExtResource( 8 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.01, 0 )
+[node name="footprint_3x3" parent="." instance=ExtResource("8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.01, 0)
 
 [connection signal="destroyed" from="." to="DamageRange" method="disable"]
 [connection signal="target_acquired" from="DamageRange" to="AliveMesh/Aimer" method="set_target"]

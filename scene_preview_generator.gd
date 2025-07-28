@@ -1,9 +1,9 @@
 extends Node
 
-export(Array, PackedScene) var preview_scenes = []
+@export var preview_scenes = [] # (Array, PackedScene)
 
-onready var viewport: Viewport = $Viewport
-onready var camera: Camera = $Viewport/Camera
+@onready var viewport: SubViewport = $SubViewport
+@onready var camera: Camera3D = $SubViewport/Camera3D
 
 # map from integer ids to textures
 var textures = {}
@@ -14,16 +14,15 @@ func generate_textures():
 	var base_cam_height: float = camera.transform.origin.y
 	
 	for scene in preview_scenes:
-		var instance = scene.instance()
+		var instance = scene.instantiate()
 		camera.transform.origin.y = base_cam_height + instance.aim_pos_height
 		camera.size = instance.preview_size
 		
 		viewport.add_child(instance)
 		
-		yield(VisualServer, "frame_post_draw")
+		await RenderingServer.frame_post_draw
 		
-		var image = Image.new()
-		image.copy_from(viewport.get_texture().get_data())
+		var image := viewport.get_texture().get_image()
 		
 		var texture = ImageTexture.new()
 		texture.create_from_image(image)
@@ -37,7 +36,7 @@ func generate_textures():
 		viewport.remove_child(instance)
 		instance.queue_free()
 	
-	viewport.render_target_update_mode = Viewport.UPDATE_DISABLED
+	viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
 
 func _ready():
 	generate_textures()

@@ -2,11 +2,14 @@ extends "res://unit.gd"
 class_name Troop
 
 # movement speed is in tiles per second
-export var move_speed := 0.0
+@export var move_speed := 0.0
 
 # how close the troop will approach buildings
 # this is the distance from their damage box
-export var approach_distance := 0.0
+@export var approach_distance := 0.0
+
+# position where the troop was spawned in at
+var spawn_pos := Vector2(0.0, 0.0)
 
 # signals sent when the unit is within range of the building, not when the ai picks a building to attack
 # used to control attacks
@@ -37,12 +40,13 @@ func set_target(building):
 		last_target_signal = LastTargetSignal.TARGET_LOST
 	elif building != null:
 		current_target = building
-		current_target.connect("destroyed", self, "_on_current_target_destroyed", [], CONNECT_ONESHOT)
+		current_target.connect("destroyed", Callable(self, "_on_current_target_destroyed").bind(), CONNECT_ONE_SHOT)
 
 func tile() -> Vector2i:
 	return Util.position_to_tile_pos(position())
 
 func _ready():
+	global_transform.origin = Vector3(spawn_pos.x, 0.0, spawn_pos.y)
 	if current_target == null:
 		emit_signal("needs_target")
 

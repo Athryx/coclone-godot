@@ -3,20 +3,20 @@ class_name Building
 
 # The size of the building's footprint in tiles
 # Only square footprints are supported
-export var footprint_size := 3
+@export var footprint_size := 3
 
 # the width of the region that troops can't be placed in
 # set to a negative number to allow troops to be placed on this building
 # this width is measured from the edge of the footprint
-export var spawn_box_width := 1
+@export var spawn_box_width := 1
 
 # The size of the building's hitbox in tiles (hitbox obstructs units from walking through)
 # Only square hitboxes are supported
-export var hitbox_size := 3.0
+@export var hitbox_size := 3.0
 
 # The size of the building's damage box in tiles (this is the box that units can target and shoot)
 # Only square damage boxes are supported
-export var damagebox_size := 3.0
+@export var damagebox_size := 3.0
 
 # Determines when units will target this building
 enum TargetMode {
@@ -27,22 +27,22 @@ enum TargetMode {
 	# Always targeted
 	ALWAYS,
 }
-export(TargetMode) var target_mode := TargetMode.ALWAYS
+@export var target_mode := TargetMode.ALWAYS
 
 # Weather or not the building contributes to the percent destruction
-export var percent_contributor := true
+@export var percent_contributor := true
 
 # position of the building on the map
-export var x_position := 0 setget set_x_position
-export var y_position := 0 setget set_y_position
+@export var x_position := 0: set = set_x_position
+@export var y_position := 0: set = set_y_position
 
-var corner_position := Vector2i.new(0, 0)
+var corner_position := Vector2i(0, 0)
 
-export(NodePath) var alive_model_node: NodePath
-onready var alive_model = get_node(alive_model_node)
+@export var alive_model_node: NodePath
+@onready var alive_model = get_node(alive_model_node)
 
-export(NodePath) var destroyed_model_node: NodePath
-onready var destroyed_model = get_node(destroyed_model_node)
+@export var destroyed_model_node: NodePath
+@onready var destroyed_model = get_node(destroyed_model_node)
 
 const TileBounds = preload("res://util/tile_bounds.gd")
 
@@ -66,14 +66,14 @@ func _ready():
 
 func position() -> Vector2:
 	var half_footprint_size := footprint_size as float / 2.0
-	return corner_position.to_vector2() + Vector2(half_footprint_size, half_footprint_size)
+	return Vector2(corner_position) + Vector2(half_footprint_size, half_footprint_size)
 
-func corner_position() -> Vector2i:
+func get_corner_position() -> Vector2i:
 	return corner_position
 
 func footprint_bounds() -> TileBounds:
-	var min_corner := corner_position()
-	var max_corner := Vector2im.add(min_corner, Vector2i.new(footprint_size, footprint_size))
+	var min_corner := get_corner_position()
+	var max_corner := min_corner + Vector2i(footprint_size, footprint_size)
 	return TileBounds.new(min_corner, max_corner)
 
 # returns tile bounds which show the min and max corner of the spawn box,

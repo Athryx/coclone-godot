@@ -1,8 +1,8 @@
-extends Spatial
+extends Node3D
 
-export var map_size := 75
+@export var map_size := 75
 
-export var map_edge_width := 3
+@export var map_edge_width := 3
 
 const Building = preload("res://buildings/building.gd")
 const TargetMode = Building.TargetMode
@@ -50,8 +50,7 @@ func generate_building_dist_map():
 				
 				var index: int = current_tile_array.bsearch_custom(
 					tile_building_dist,
-					tile_building_dist,
-					"compare"
+					tile_building_dist.compare
 				)
 				
 				current_tile_array.insert(index, tile_building_dist)
@@ -70,8 +69,8 @@ var spawn_pos_map := []
 # true means it is occupied by a building
 var footprint_map := []
 
-onready var spawn_pos_mesh_node = $SpawnZoneMesh
-onready var spawn_pos_mesh = $SpawnZoneMesh.multimesh
+@onready var spawn_pos_mesh_node = $SpawnZoneMesh
+@onready var spawn_pos_mesh = $SpawnZoneMesh.multimesh
 
 func generate_spawn_pos_mesh():
 	# generate the outline mesh
@@ -80,28 +79,28 @@ func generate_spawn_pos_mesh():
 	
 	for x in map_size:
 		for y in map_size:
-			var tile = Vector2i.new(x, y)
+			var tile = Vector2i(x, y)
 			
-			if not is_valid_spawn_tile(Vector2i.new(x, y)):
-				var tiles = [Vector2i.new(x - 1, y), Vector2i.new(x, y - 1)]
+			if not is_valid_spawn_tile(Vector2i(x, y)):
+				var tiles = [Vector2i(x - 1, y), Vector2i(x, y - 1)]
 				
-				if is_valid_spawn_tile(Vector2i.new(x - 1, y)):
+				if is_valid_spawn_tile(Vector2i(x - 1, y)):
 					mesh_transforms.push_back(
 						get_spawn_mesh_transform(tile, -PI / 2.0)
 					)
 				
-				if is_valid_spawn_tile(Vector2i.new(x, y - 1)):
+				if is_valid_spawn_tile(Vector2i(x, y - 1)):
 					mesh_transforms.push_back(
 						get_spawn_mesh_transform(tile, 0.0)
 					)
 				
-				var pos_x_tile := Vector2i.new(x + 1, y)
+				var pos_x_tile := Vector2i(x + 1, y)
 				if is_valid_spawn_tile(pos_x_tile):
 					mesh_transforms.push_back(
 						get_spawn_mesh_transform(pos_x_tile, -PI / 2.0)
 					)
 				
-				var pos_y_tile := Vector2i.new(x, y + 1)
+				var pos_y_tile := Vector2i(x, y + 1)
 				if is_valid_spawn_tile(pos_y_tile):
 					mesh_transforms.push_back(
 						get_spawn_mesh_transform(pos_y_tile, 0.0)
@@ -111,10 +110,10 @@ func generate_spawn_pos_mesh():
 	for i in mesh_transforms.size():
 		spawn_pos_mesh.set_instance_transform(i, mesh_transforms[i])
 
-func get_spawn_mesh_transform(position: Vector2i, rotation: float) -> Transform:
-	return Transform(
+func get_spawn_mesh_transform(position: Vector2i, rotation: float) -> Transform3D:
+	return Transform3D(
 		Basis(Vector3(0.0, 1.0, 0.0), rotation),
-		Util.vector2_to_vector3(position.to_vector2())
+		Util.vector2_to_vector3(Vector2(position))
 	)
 
 func _ready():
@@ -132,7 +131,7 @@ func finalize():
 	generate_spawn_pos_mesh()
 	
 	for building in get_tree().get_nodes_in_group("buildings"):
-		building.connect("spawn_projectile", self, "_on_spawn_projectile")
+		building.connect("spawn_projectile", Callable(self, "_on_spawn_projectile"))
 
 func add_building(building: Building) -> bool:
 	var footprint_bounds := building.footprint_bounds()
@@ -171,7 +170,7 @@ func is_valid_spawn_pos(position: Vector2) -> bool:
 	return is_valid_spawn_tile(tile)
 
 func is_valid_tile_bounds(tile_bounds: TileBounds) -> bool:
-	return is_valid_tile_pos(tile_bounds.min_corner) and is_valid_tile_pos(Vector2im.sub(tile_bounds.max_corner, Vector2i.new(1, 1)))
+	return is_valid_tile_pos(tile_bounds.min_corner) and is_valid_tile_pos(tile_bounds.max_corner - Vector2i(1, 1))
 
 func is_valid_footprint_tile_bounds(tile_bounds: TileBounds) -> bool:
 	if not is_valid_tile_bounds(tile_bounds):
@@ -185,31 +184,45 @@ func is_valid_footprint_tile_bounds(tile_bounds: TileBounds) -> bool:
 	return true
 
 func clamp_tile_bounds(tile_bounds: TileBounds):
-	tile_bounds.min_corner = Vector2im.max(tile_bounds.min_corner, Vector2i.new(0, 0))
-	tile_bounds.max_corner = Vector2im.min(tile_bounds.max_corner, Vector2i.new(map_size, map_size))
+	tile_bounds.min_corner = tile_bounds.min_corner.max(Vector2i(0, 0))
+	tile_bounds.max_corner = tile_bounds.max_corner.min(Vector2i(map_size, map_size))
 
-onready var spawn_mesh_tween: Tween = $SpawnZoneMesh/OpacityTween
-onready var spawn_mesh_timer: Timer = $SpawnZoneMesh/OpacityTimer
+var spawn_mesh_tween: Tween = null
+
+func setup_spawn_overlay_tween():
+	var base_color: Color = spawn_pos_mesh_node.material_override.albedo_color
+	
+	spawn_mesh_tween.tween_interval(3)
+	spawn_mesh_tween.tween_property(
+		spawn_pos_mesh_node.material_override, "albedo_color",
+		Color(base_color.r, base_color.g, base_color.b, 0.0),
+		1.5
+	)
 
 # shows the valid spawn position overlay for a few seconds, then hides it
 # used when a troop is clicked on an invalid position
 func show_valid_spawn_overlay():
-	spawn_mesh_timer.stop()
-	spawn_mesh_tween.remove_all()
-	spawn_pos_mesh_node.material_override.albedo_color.a = 0.6
-	
-	spawn_mesh_timer.start(3)
-	yield(spawn_mesh_timer, "timeout")
+	if spawn_mesh_tween != null:
+		spawn_mesh_tween.stop()
 	
 	var base_color: Color = spawn_pos_mesh_node.material_override.albedo_color
 	
-	spawn_mesh_tween.interpolate_property(
+	spawn_pos_mesh_node.material_override.albedo_color = Color(
+		base_color.r,
+		base_color.g,
+		base_color.b,
+		0.6
+	)
+	
+	spawn_mesh_tween = spawn_pos_mesh_node.create_tween()
+	spawn_mesh_tween.tween_interval(3)
+	spawn_mesh_tween.tween_property(
 		spawn_pos_mesh_node.material_override, "albedo_color",
-		Color(base_color.r, base_color.g, base_color.b, 0.6),
 		Color(base_color.r, base_color.g, base_color.b, 0.0),
 		1.5
 	)
-	spawn_mesh_tween.start()
+	
+	spawn_mesh_tween.play()
 
 func enable_valid_spawn_overlay():
 	spawn_pos_mesh_node.material_override.albedo_color.a = 0.6
@@ -221,10 +234,10 @@ func spawn_troop(position: Vector2, troop):
 		return
 	
 	assert(is_valid_map_pos(position))
-	troop.global_transform.origin = Vector3(position.x, 0.0, position.y)
+	troop.spawn_pos = position
 	troop.building_range_map = building_range_map
-	troop.connect("needs_target", self, "_on_needs_target", [troop])
-	troop.connect("spawn_projectile", self, "_on_spawn_projectile")
+	troop.connect("needs_target", Callable(self, "_on_needs_target").bind(troop))
+	troop.connect("spawn_projectile", Callable(self, "_on_spawn_projectile"))
 	add_child(troop)
 	building_range_map.new_troop_at(troop, troop.position())
 
@@ -247,7 +260,7 @@ func _on_needs_target(troop):
 		var building_tile: TileBuildingDist = tile_dist_list[i]
 		
 		if building_tile.building.is_destroyed():
-			tile_dist_list.remove(i)
+			tile_dist_list.remove_at(i)
 			continue
 		
 		# for now, just select the first target available

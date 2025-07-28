@@ -1,14 +1,14 @@
-extends Spatial
+extends Node3D
 class_name Aimer
 # aims all child nodes at the current target
 # aims the negative z axis towards the target
 
 # rotation speed is in radians per second
-export var rotate_speed_azimuth := 0.0
-export var rotate_speed_elevation := 0.0
+@export var rotate_speed_azimuth := 0.0
+@export var rotate_speed_elevation := 0.0
 
 # if true, aims at the troop on the ground, instead of the troop at the aim point
-export var aim_ground := false
+@export var aim_ground := false
 
 var animate_azimuth: bool
 var animate_elavation: bool
@@ -31,7 +31,7 @@ func target_direction() -> Vector3:
 
 # returns the direction of where the aimer is currently aiming
 func aim_direction() -> Vector3:
-	return global_transform.basis.xform(Vector3(0.0, 0.0, -1.0)).normalized()
+	return global_transform.basis * (Vector3(0.0, 0.0, -1.0)).normalized()
 
 func _physics_process(delta: float):
 	if current_target == null:

@@ -1,17 +1,17 @@
-extends Spatial
+extends Node3D
 class_name ProjectileSpawner
 
 # the dalay between acquiring a target and shooting the first shot
-export var initial_wait_time := 0.0
+@export var initial_wait_time := 0.0
 # the subsequent delays between shots
-export var refire_time := 0.0
+@export var refire_time := 0.0
 
 # the projectile that will be fired
 # the root node should be an instance of Projectile
-export(PackedScene) var projectile: PackedScene
+@export var projectile: PackedScene
 
 # damage done by each projectile
-export var damage := 0
+@export var damage := 0
 
 signal spawn_projectile(projectile)
 
@@ -22,7 +22,7 @@ var timer: Timer
 func _ready():
 	timer = Timer.new()
 	timer.one_shot = true
-	timer.connect("timeout", self, "_on_timer_timeout")
+	timer.connect("timeout", Callable(self, "_on_timer_timeout"))
 	add_child(timer)
 
 func set_target(target = null):
@@ -34,7 +34,7 @@ func set_target(target = null):
 
 func _on_timer_timeout():
 	timer.start(refire_time)
-	var projectile_instance = projectile.instance()
+	var projectile_instance = projectile.instantiate()
 	projectile_instance.damage = damage
 	projectile_instance.start = self
 	projectile_instance.target = target

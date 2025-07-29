@@ -46,7 +46,7 @@ needs_disable="A node which needs to be disabled after attack is over"
 
 [gui]
 
-theme/custom="res://ui/coclone_theme.tres"
+theme/custom="uid://hjb0facu2r2v"
 
 [input]
 

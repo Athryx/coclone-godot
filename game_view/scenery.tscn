@@ -7,6 +7,7 @@
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.819152, 0.519837, -0.242404, 0, 0.422618, 0.906308, 0.573577, -0.742404, 0.346189, 0, 0, 0)
+light_energy = 1.5
 shadow_enabled = true
 
 [node name="grass_plane_new" parent="." instance=ExtResource("1_c2vih")]

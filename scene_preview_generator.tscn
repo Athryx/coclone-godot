@@ -1,31 +1,30 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=6 format=3 uid="uid://da3n20opnex88"]
 
 [ext_resource type="PackedScene" path="res://units/troops/gunner.tscn" id="1"]
 [ext_resource type="PackedScene" uid="uid://cun4cy2nkmc4i" path="res://units/buildings/light_platform.tscn" id="2"]
 [ext_resource type="Script" uid="uid://dg7guf618jx2v" path="res://scene_preview_generator.gd" id="3"]
-[ext_resource type="Environment" path="res://coclone_environment.tres" id="4"]
+[ext_resource type="Environment" uid="uid://c4p87hwa0wois" path="res://coclone_environment.tres" id="4"]
 
-[sub_resource type="World" id=1]
-environment = ExtResource( 4 )
+[sub_resource type="World3D" id="World3D_rjosu"]
+environment = ExtResource("4")
 
 [node name="ScenePreviewGenerator" type="Node"]
-script = ExtResource( 3 )
-preview_scenes = [ ExtResource( 1 ), ExtResource( 2 ) ]
+script = ExtResource("3")
+preview_scenes = Array[PackedScene]([ExtResource("1"), ExtResource("2")])
 
 [node name="SubViewport" type="SubViewport" parent="."]
-size = Vector2( 100, 80 )
-own_world = true
-world = SubResource( 1 )
+own_world_3d = true
+world_3d = SubResource("World3D_rjosu")
 transparent_bg = true
-render_target_v_flip = true
-render_target_update_mode = 3
 gui_disable_input = true
+size = Vector2i(100, 80)
+render_target_update_mode = 3
 
 [node name="Camera3D" type="Camera3D" parent="SubViewport"]
-transform = Transform3D( -0.707107, 0.298836, -0.640857, 0, 0.906308, 0.422618, 0.707107, 0.298836, -0.640857, -3.5, 2.308, -3.5 )
+transform = Transform3D(-0.707107, 0.298836, -0.640857, 0, 0.906308, 0.422618, 0.707107, 0.298836, -0.640857, -3.5, 2.308, -3.5)
 projection = 1
 current = true
 size = 5.0
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="SubViewport"]
-transform = Transform3D( 0.819152, -0.519837, -0.242404, -3.69465e-08, -0.422618, 0.906308, -0.573577, -0.742404, -0.346189, 0, 0, 0 )
+transform = Transform3D(0.819152, -0.519837, -0.242404, -3.69465e-08, -0.422618, 0.906308, -0.573577, -0.742404, -0.346189, 0, 0, 0)

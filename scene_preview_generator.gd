@@ -1,6 +1,6 @@
 extends Node
 
-@export var preview_scenes = [] # (Array, PackedScene)
+@export var preview_scenes: Array[PackedScene] = []
 
 @onready var viewport: SubViewport = $SubViewport
 @onready var camera: Camera3D = $SubViewport/Camera3D
@@ -13,6 +13,7 @@ var waiting_callbacks = {}
 func generate_textures():
 	var base_cam_height: float = camera.transform.origin.y
 	
+	var i = 0
 	for scene in preview_scenes:
 		var instance = scene.instantiate()
 		camera.transform.origin.y = base_cam_height + instance.aim_pos_height
@@ -23,6 +24,8 @@ func generate_textures():
 		await RenderingServer.frame_post_draw
 		
 		var image := viewport.get_texture().get_image()
+		image.save_png("/home/jack/unit%d.png" % i)
+		i += 1
 		
 		var texture = ImageTexture.new()
 		texture.create_from_image(image)

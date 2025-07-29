@@ -7,7 +7,6 @@ class_name BattleInfo
 @onready var time_remaining_label: Label = $TimeRemaing
 
 func set_percent_destruction(percent: float):
-	print(percent)
 	percent_destruction_label.text = ("%.2f" % percent) + " %"
 
 func set_time_remaining(seconds: int):

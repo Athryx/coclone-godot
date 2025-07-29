@@ -7,7 +7,6 @@ signal clicked
 @export var unit: PackedScene
 
 func set_text(text: String):
-	print(text)
 	$Label.text = text
 
 func _ready():

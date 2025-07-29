@@ -1,0 +1,25 @@
+[gd_scene load_steps=4 format=3 uid="uid://cg5fuv4w4cq3u"]
+
+[ext_resource type="Script" uid="uid://b8ux2rx04oois" path="res://units/buildings/building.gd" id="1_cu2lx"]
+[ext_resource type="PackedScene" uid="uid://dfgm4nvwehwcv" path="res://assets/buildings/broken_building_4x4.glb" id="2_sn5ot"]
+[ext_resource type="Script" uid="uid://cvyvotbd7bt0p" path="res://units/level_model.gd" id="3_4gbsh"]
+
+[node name="Building" type="Node3D" groups=["buildings"]]
+script = ExtResource("1_cu2lx")
+footprint_size = 4
+spawn_box_width = 2
+hitbox_size = 4.0
+damagebox_size = 4.0
+alive_model_node = NodePath("LevelModel")
+destroyed_model_node = NodePath("broken_building_4x4")
+unit_name = "Gold Mine"
+aim_pos_height = 1.0
+max_health = 400
+metadata/_custom_type_script = "uid://b8ux2rx04oois"
+
+[node name="broken_building_4x4" parent="." instance=ExtResource("2_sn5ot")]
+
+[node name="LevelModel" type="Node3D" parent="."]
+script = ExtResource("3_4gbsh")
+models_folder = "res://assets/buildings/gold_mine"
+metadata/_custom_type_script = "uid://cvyvotbd7bt0p"

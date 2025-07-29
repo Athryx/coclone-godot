@@ -1,4 +1,4 @@
-extends "res://unit.gd"
+extends "res://units/unit.gd"
 class_name Building
 
 # The size of the building's footprint in tiles

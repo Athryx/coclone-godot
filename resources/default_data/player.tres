@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="Player" load_steps=4 format=3 uid="uid://bet7g256wpu3b"]
 
 [ext_resource type="Script" uid="uid://cvajoawseua8g" path="res://resources/player.gd" id="1"]
-[ext_resource type="PackedScene" uid="uid://cun4cy2nkmc4i" path="res://buildings/light_platform.tscn" id="2"]
+[ext_resource type="PackedScene" uid="uid://cun4cy2nkmc4i" path="res://units/buildings/light_platform.tscn" id="2"]
 [ext_resource type="Resource" uid="uid://b64kg5ct5cvgr" path="res://resources/default_data/base_layout.tres" id="3"]
 
 [resource]

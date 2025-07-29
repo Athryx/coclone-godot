@@ -1,7 +1,7 @@
 [gd_scene load_steps=6 format=2]
 
-[ext_resource type="PackedScene" path="res://troops/gunner.tscn" id="1"]
-[ext_resource type="PackedScene" uid="uid://cun4cy2nkmc4i" path="res://buildings/light_platform.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://units/troops/gunner.tscn" id="1"]
+[ext_resource type="PackedScene" uid="uid://cun4cy2nkmc4i" path="res://units/buildings/light_platform.tscn" id="2"]
 [ext_resource type="Script" uid="uid://dg7guf618jx2v" path="res://scene_preview_generator.gd" id="3"]
 [ext_resource type="Environment" path="res://coclone_environment.tres" id="4"]
 

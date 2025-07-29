@@ -1,7 +1,7 @@
 extends Resource
 class_name BaseLayout
 
-const BuildingScenePosition = preload("res://buildings/building_scene_position.gd")
+const BuildingScenePosition = preload("res://units/buildings/building_scene_position.gd")
 
 @export var buildings: Array[Dictionary] = [] # (Array, Dictionary)
 

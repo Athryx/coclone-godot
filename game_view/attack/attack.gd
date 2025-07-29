@@ -3,7 +3,7 @@ extends Node3D
 # maximum duration of the attack in seconds
 @export var attack_time := 180
 
-const Gunner = preload("res://troops/gunner.tscn")
+const Gunner = preload("res://units/troops/gunner.tscn")
 
 @onready var map = $Map
 @onready var battle_timer = $BattleTimer

@@ -1,4 +1,4 @@
-extends "res://unit.gd"
+extends "res://units/unit.gd"
 class_name Troop
 
 # movement speed is in tiles per second
@@ -23,7 +23,7 @@ enum LastTargetSignal {
 
 var last_target_signal: int = LastTargetSignal.TARGET_LOST
 
-const BuildingRangeMap = preload("res://buildings/building_range_map.gd")
+const BuildingRangeMap = preload("res://units/buildings/building_range_map.gd")
 
 var building_range_map: BuildingRangeMap
 

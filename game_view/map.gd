@@ -5,10 +5,10 @@ extends Node3D
 
 @export var map_edge_width := 3
 
-const Building = preload("res://buildings/building.gd")
+const Building = preload("res://units/buildings/building.gd")
 const TargetMode = Building.TargetMode
 
-const BuildingRangeMap = preload("res://buildings/building_range_map.gd")
+const BuildingRangeMap = preload("res://units/buildings/building_range_map.gd")
 
 class TileBuildingDist:
 	var distance: float

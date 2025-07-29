@@ -1,0 +1,26 @@
+[gd_scene load_steps=4 format=3 uid="uid://bptc87pyvkvbc"]
+
+[ext_resource type="Script" uid="uid://b8ux2rx04oois" path="res://units/buildings/building.gd" id="1_fnsxf"]
+[ext_resource type="Script" uid="uid://cvyvotbd7bt0p" path="res://units/level_model.gd" id="2_cce0h"]
+[ext_resource type="PackedScene" uid="uid://bns78tpwrel82" path="res://assets/buildings/broken_building_6x6.glb" id="2_h5cb8"]
+
+[node name="TownHall" type="Node3D" groups=["buildings"]]
+script = ExtResource("1_fnsxf")
+footprint_size = 6
+spawn_box_width = 2
+hitbox_size = 6.0
+damagebox_size = 6.0
+alive_model_node = NodePath("LevelModel")
+destroyed_model_node = NodePath("broken_building_6x6")
+unit_name = "Town Hall"
+aim_pos_height = 1.5
+max_health = 1500
+metadata/_custom_type_script = "uid://b8ux2rx04oois"
+
+[node name="broken_building_6x6" parent="." instance=ExtResource("2_h5cb8")]
+
+[node name="LevelModel" type="MeshInstance3D" parent="."]
+script = ExtResource("2_cce0h")
+models_folder = "res://assets/buildings/town_halls"
+level = 3
+metadata/_custom_type_script = "uid://cvyvotbd7bt0p"

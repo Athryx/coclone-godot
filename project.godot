@@ -38,6 +38,12 @@ singletons=["res://addons/godot-git-plugin/git_api.gdnlib"]
 scene=false
 aliasing=false
 
+[global_group]
+
+buildings="A building node"
+building_range="A damage range node which is used by buildings to taret troups"
+needs_disable="A node which needs to be disabled after attack is over"
+
 [gui]
 
 theme/custom="res://ui/coclone_theme.tres"

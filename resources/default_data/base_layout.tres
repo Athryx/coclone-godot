@@ -1,20 +1,27 @@
-[gd_resource type="Resource" script_class="BaseLayout" load_steps=3 format=3 uid="uid://b64kg5ct5cvgr"]
+[gd_resource type="Resource" script_class="BaseLayout" load_steps=6 format=3 uid="uid://b64kg5ct5cvgr"]
 
 [ext_resource type="Script" uid="uid://bh057khaj41u" path="res://resources/base_layout.gd" id="1"]
-[ext_resource type="PackedScene" uid="uid://cun4cy2nkmc4i" path="res://buildings/light_platform.tscn" id="2"]
+[ext_resource type="PackedScene" uid="uid://bptc87pyvkvbc" path="res://units/buildings/instances/town_hall.tscn" id="1_ttay1"]
+[ext_resource type="PackedScene" uid="uid://cun4cy2nkmc4i" path="res://units/buildings/light_platform.tscn" id="2_mk8fn"]
+[ext_resource type="PackedScene" uid="uid://b783jvprut7as" path="res://units/buildings/instances/troop_tower.tscn" id="2_oqh8u"]
+[ext_resource type="PackedScene" uid="uid://cg5fuv4w4cq3u" path="res://units/buildings/instances/gold_mine.tscn" id="4_oqh8u"]
 
 [resource]
 script = ExtResource("1")
 buildings = Array[Dictionary]([{
-"building": ExtResource("2"),
+"building": ExtResource("1_ttay1"),
 "x": 23,
 "y": 37
 }, {
-"building": ExtResource("2"),
+"building": ExtResource("2_oqh8u"),
 "x": 5,
 "y": 20
 }, {
-"building": ExtResource("2"),
+"building": ExtResource("2_mk8fn"),
 "x": 58,
 "y": 40
+}, {
+"building": ExtResource("4_oqh8u"),
+"x": 11,
+"y": 23
 }])

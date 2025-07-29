@@ -3,7 +3,7 @@ class_name BaseLayout
 
 const BuildingScenePosition = preload("res://buildings/building_scene_position.gd")
 
-@export var buildings := [] # (Array, Dictionary)
+@export var buildings: Array[Dictionary] = [] # (Array, Dictionary)
 
 func add_building(building: BuildingScenePosition):
 	buildings.push_back({

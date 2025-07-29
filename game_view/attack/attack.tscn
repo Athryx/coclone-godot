@@ -1,10 +1,21 @@
-[gd_scene load_steps=7 format=3 uid="uid://7ji82bmhmnpf"]
+[gd_scene load_steps=8 format=3 uid="uid://7ji82bmhmnpf"]
 
-[ext_resource type="PackedScene" uid="uid://brceldhrfa7ts" path="res://game_area.tscn" id="1"]
-[ext_resource type="Script" uid="uid://61j1sgqyekcw" path="res://attack.gd" id="3"]
+[ext_resource type="PackedScene" uid="uid://brceldhrfa7ts" path="res://game_view/game_area.tscn" id="1"]
+[ext_resource type="Script" uid="uid://61j1sgqyekcw" path="res://game_view/attack/attack.gd" id="3"]
 [ext_resource type="PackedScene" uid="uid://b7c1ux4ujb2sm" path="res://ui/unit_bar.tscn" id="4"]
-[ext_resource type="PackedScene" uid="uid://iq85nxbw2vy1" path="res://map.tscn" id="6"]
+[ext_resource type="PackedScene" uid="uid://iq85nxbw2vy1" path="res://game_view/map.tscn" id="6"]
 [ext_resource type="PackedScene" uid="uid://b7pe7vn5rjdic" path="res://ui/battle_ui/battle_info.tscn" id="8"]
+
+[sub_resource type="StyleBoxFlat" id="400"]
+bg_color = Color(0.262745, 0.262745, 0.262745, 0.443137)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0c0jm"]
 bg_color = Color(0.262745, 0.262745, 0.262745, 0.443137)
@@ -36,6 +47,7 @@ offset_left = 20.0
 offset_top = -130.0
 offset_right = -180.0
 offset_bottom = -20.0
+theme_override_styles/panel = SubResource("400")
 
 [node name="BattleInfo" parent="." instance=ExtResource("8")]
 anchors_preset = 3

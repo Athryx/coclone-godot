@@ -1,0 +1,31 @@
+[gd_scene load_steps=6 format=3 uid="uid://bwo1kynytnpky"]
+
+[ext_resource type="ArrayMesh" uid="uid://dbl7uw776xkjt" path="res://assets/grid_tile.obj" id="1_n56oq"]
+[ext_resource type="Script" uid="uid://c0jkaqueyqs23" path="res://game_view/grid.gd" id="2_r2v38"]
+
+[sub_resource type="Shader" id="2"]
+code = "shader_type spatial;
+
+uniform float opacity_fallof;
+
+void fragment() {
+	vec4 world_pos = INV_VIEW_MATRIX * vec4(VERTEX, 1.0);
+	vec3 model_pos = (inverse(MODEL_MATRIX) * world_pos).xyz;
+	float center_dist = distance(model_pos, vec3(0.0));
+	
+	ALPHA = 1.0 / (1.0 + exp(opacity_fallof * center_dist));
+}"
+
+[sub_resource type="ShaderMaterial" id="3"]
+render_priority = 0
+shader = SubResource("2")
+shader_parameter/opacity_fallof = 0.0
+
+[sub_resource type="MultiMesh" id="1"]
+transform_format = 1
+mesh = ExtResource("1_n56oq")
+
+[node name="Grid" type="MultiMeshInstance3D"]
+material_override = SubResource("3")
+multimesh = SubResource("1")
+script = ExtResource("2_r2v38")

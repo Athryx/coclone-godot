@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3 uid="uid://gc2n8jhi3pef"]
+
+[ext_resource type="PackedScene" uid="uid://cbmqagqscl2e1" path="res://assets/scenery/grass_plane_new.glb" id="1_c2vih"]
+[ext_resource type="PackedScene" uid="uid://ch4mhv6021qsb" path="res://assets/scenery/scenery.glb" id="2_o10vp"]
+
+[node name="Scenery" type="Node3D"]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.819152, 0.519837, -0.242404, 0, 0.422618, 0.906308, 0.573577, -0.742404, 0.346189, 0, 0, 0)
+shadow_enabled = true
+
+[node name="grass_plane_new" parent="." instance=ExtResource("1_c2vih")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 37.5, 0, 37.5)
+
+[node name="scenery" parent="." instance=ExtResource("2_o10vp")]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 37.5, 0, 37.5)

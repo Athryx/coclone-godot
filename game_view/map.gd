@@ -1,4 +1,5 @@
 extends Node3D
+# contains info about that active base and troops
 
 @export var map_size := 75
 

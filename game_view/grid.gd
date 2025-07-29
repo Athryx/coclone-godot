@@ -1,5 +1,7 @@
 extends MultiMeshInstance3D
 
+# grid view that shows up under mouse cursor
+
 @export var grid_size := 11
 @export var grid_opacity_fallof := 0.7
 

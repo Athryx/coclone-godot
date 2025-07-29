@@ -1,6 +1,6 @@
 extends Node3D
 
-const Map = preload("res://map.gd")
+const Map = preload("res://game_view/map.gd")
 
 @onready var building_bar: UnitBar = $BuildingBar
 @onready var map: Map = $Map

@@ -47,11 +47,14 @@ func _on_game_area_position_mouseover(position: Vector2) -> void:
 	if not building_bar.is_unit_selected():
 		# if building is deselected, remove the placement preview
 		deselect_building()
-		
 		return
 	
 	var tile := Util.position_to_tile_pos(position)
 	if selected_building == null:
+		selected_building = building_bar.get_current_unit()
+		add_child(selected_building)
+	elif not Util.is_instance_of_scene(selected_building, building_bar.get_current_unit_scene()):
+		deselect_building()
 		selected_building = building_bar.get_current_unit()
 		add_child(selected_building)
 	

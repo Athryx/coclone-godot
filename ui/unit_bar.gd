@@ -48,11 +48,18 @@ func _on_unit_clicked(unit: UnitBarUnit):
 func is_unit_selected():
 	return current_unit != null and current_unit.count > 0
 
-func get_current_unit():
+func get_current_unit_scene() -> PackedScene:
 	if current_unit == null or current_unit.count == 0:
 		return null
 	
-	return current_unit.unit.instantiate()
+	return current_unit.unit
+
+func get_current_unit():
+	var unit := get_current_unit_scene()
+	if unit == null:
+		return null
+	else:
+		return unit.instantiate()
 
 func dec_current_unit():
 	if current_unit != null:

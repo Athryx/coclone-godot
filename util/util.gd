@@ -38,3 +38,8 @@ static func tile_bounds(center: Vector2, size: float) -> TileBounds:
 
 static func signed_angle_between(a: Vector2, b: Vector2) -> float:
 	return -atan2(a.x * b.y - a.y * b.x, a.x * b.x + a.y * b.y)
+
+static func is_instance_of_scene(node: Node, packed_scene: PackedScene) -> bool:
+	var node_scene_path = node.scene_file_path
+	var packed_scene_path = packed_scene.resource_path
+	return node_scene_path == packed_scene_path

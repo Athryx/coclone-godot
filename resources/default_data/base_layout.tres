@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://bh057khaj41u" path="res://resources/base_layout.gd" id="1"]
 [ext_resource type="Script" uid="uid://ba4jrbhod33i4" path="res://resources/building_scene_position.gd" id="1_lucfw"]
-[ext_resource type="PackedScene" uid="uid://cun4cy2nkmc4i" path="res://units/buildings/light_platform.tscn" id="2_n8e71"]
+[ext_resource type="PackedScene" uid="uid://cun4cy2nkmc4i" path="res://units/buildings/instances/light_platform.tscn" id="2_n8e71"]
 [ext_resource type="PackedScene" uid="uid://bptc87pyvkvbc" path="res://units/buildings/instances/town_hall.tscn" id="3_esrqc"]
 [ext_resource type="PackedScene" uid="uid://b783jvprut7as" path="res://units/buildings/instances/troop_tower.tscn" id="4_62fde"]
 [ext_resource type="PackedScene" uid="uid://cg5fuv4w4cq3u" path="res://units/buildings/instances/gold_mine.tscn" id="5_jklb1"]

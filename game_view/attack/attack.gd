@@ -3,7 +3,7 @@ extends Node3D
 # maximum duration of the attack in seconds
 @export var attack_time := 180
 
-const Gunner = preload("res://units/troops/gunner.tscn")
+const Gunner = preload("res://units/troops/instances/gunner.tscn")
 const Knight = preload("res://units/troops/instances/knight.tscn")
 
 @onready var map = $Map
@@ -18,7 +18,7 @@ enum AttackState {
 }
 var attack_state: int = AttackState.SCOUTING
 
-func _on_GameArea_position_clicked(position):
+func _on_GameArea_position_clicked(position: Vector2):
 	if map.is_valid_spawn_pos(position):
 		var troop = troop_bar.get_current_unit()
 		

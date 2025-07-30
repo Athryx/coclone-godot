@@ -4,7 +4,8 @@ extends Node3D
 
 @export var map_size := 75
 
-signal position_clicked(position)
+signal position_clicked(position: Vector2)
+signal position_mouseover(position: Vector2)
 
 @onready var camera = $Camera3D
 @onready var grid = $Grid
@@ -20,6 +21,19 @@ func is_valid_position(position: Vector2) -> bool:
 	var tile := Util.position_to_tile_pos(position)
 	return tile.x >= 0 and tile.y >= 0 and tile.x < map_size and tile.y < map_size
 
+func update_grid(position: Vector3):
+	var pos2d := Util.vector3_to_vector2(position)
+	
+	if is_valid_position(pos2d):
+		var tile_pos_center := Util.round_to_tile_pos(pos2d) + Vector2(0.5, 0.5)
+		
+		var tile_pos3d := Util.vector2_to_vector3(tile_pos_center)
+		var camera_direction: Vector3 = camera.camera_direction_vec()
+		grid.transform.origin = tile_pos3d - 10.0 * camera_direction
+		grid.visible = true
+	else:
+		grid.visible = false
+
 func _on_GroundArea_input_event(input_camera, event, position, normal, shape_idx):
 	if event is InputEventMouseButton and event.pressed and event.button_index == 1:
 		var pos2d := Util.vector3_to_vector2(position)
@@ -27,15 +41,10 @@ func _on_GroundArea_input_event(input_camera, event, position, normal, shape_idx
 		
 		if is_valid_position(pos2d):
 			emit_signal("position_clicked", pos2d)
-	elif event is InputEventMouseMotion and grid_enabled:
-		var pos2d := Util.vector3_to_vector2(position)
+	elif event is InputEventMouseMotion:
+		if grid_enabled:
+			update_grid(position)
 		
+		var pos2d := Util.vector3_to_vector2(position)
 		if is_valid_position(pos2d):
-			var tile_pos_center := Util.round_to_tile_pos(pos2d) + Vector2(0.5, 0.5)
-			
-			var tile_pos3d := Util.vector2_to_vector3(tile_pos_center)
-			var camera_direction: Vector3 = camera.camera_direction_vec()
-			grid.transform.origin = tile_pos3d - 10.0 * camera_direction
-			grid.visible = true
-		else:
-			grid.visible = false
+			emit_signal("position_mouseover", pos2d)

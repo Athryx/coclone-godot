@@ -54,6 +54,14 @@ func set_y_position(num: int):
 	y_position = num
 	corner_position.y = num
 
+func set_corner_position(tile: Vector2i):
+	corner_position = tile
+	var half_footprint := footprint_size as float / 2.0
+	var x := corner_position.x as float + half_footprint
+	var y := corner_position.y as float + half_footprint
+	global_transform.origin.x = x
+	global_transform.origin.z = y
+
 func _ready():
 	var half_footprint := footprint_size as float / 2.0
 	var x := corner_position.x as float + half_footprint

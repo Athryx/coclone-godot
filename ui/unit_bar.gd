@@ -45,6 +45,9 @@ func add_unit(unit: PackedScene, count: int = 1):
 func _on_unit_clicked(unit: UnitBarUnit):
 	current_unit = unit
 
+func is_unit_selected():
+	return current_unit != null and current_unit.count > 0
+
 func get_current_unit():
 	if current_unit == null or current_unit.count == 0:
 		return null
@@ -55,3 +58,6 @@ func dec_current_unit():
 	if current_unit != null:
 		current_unit.count -= 1
 		current_unit.icon.set_text(str(current_unit.count))
+
+func deselect_unit():
+	current_unit = null

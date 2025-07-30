@@ -8,6 +8,7 @@ class_name Unit
 @export var aim_pos_height := 0.0
 
 @export var preview_size := 5.0
+@export var preview_y_offset := 0.0
 
 @export var max_health := 0
 @onready var health = max_health

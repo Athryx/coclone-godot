@@ -1,17 +1,20 @@
-[gd_scene load_steps=7 format=3 uid="uid://da3n20opnex88"]
+[gd_scene load_steps=10 format=3 uid="uid://da3n20opnex88"]
 
-[ext_resource type="PackedScene" uid="uid://caje2nu7nyj7e" path="res://units/troops/gunner.tscn" id="1"]
-[ext_resource type="PackedScene" uid="uid://cun4cy2nkmc4i" path="res://units/buildings/light_platform.tscn" id="2"]
+[ext_resource type="PackedScene" uid="uid://caje2nu7nyj7e" path="res://units/troops/instances/gunner.tscn" id="1"]
+[ext_resource type="PackedScene" uid="uid://cun4cy2nkmc4i" path="res://units/buildings/instances/light_platform.tscn" id="2"]
 [ext_resource type="Script" uid="uid://dg7guf618jx2v" path="res://scene_preview_generator.gd" id="3"]
 [ext_resource type="Environment" uid="uid://c4p87hwa0wois" path="res://coclone_environment.tres" id="4"]
 [ext_resource type="PackedScene" uid="uid://banccogp7rcqu" path="res://units/troops/instances/knight.tscn" id="4_k8rl3"]
+[ext_resource type="PackedScene" uid="uid://cg5fuv4w4cq3u" path="res://units/buildings/instances/gold_mine.tscn" id="5_20i3q"]
+[ext_resource type="PackedScene" uid="uid://bptc87pyvkvbc" path="res://units/buildings/instances/town_hall.tscn" id="6_slpak"]
+[ext_resource type="PackedScene" uid="uid://b783jvprut7as" path="res://units/buildings/instances/troop_tower.tscn" id="7_hengr"]
 
 [sub_resource type="World3D" id="World3D_rjosu"]
 environment = ExtResource("4")
 
 [node name="ScenePreviewGenerator" type="Node"]
 script = ExtResource("3")
-preview_scenes = Array[PackedScene]([ExtResource("1"), ExtResource("2"), ExtResource("4_k8rl3")])
+preview_scenes = Array[PackedScene]([ExtResource("1"), ExtResource("2"), ExtResource("4_k8rl3"), ExtResource("5_20i3q"), ExtResource("6_slpak"), ExtResource("7_hengr")])
 
 [node name="SubViewport" type="SubViewport" parent="."]
 own_world_3d = true
@@ -25,7 +28,7 @@ render_target_update_mode = 3
 transform = Transform3D(-0.707107, 0.640856, 0.298836, 3.69465e-08, -0.422618, 0.906308, 0.707107, 0.640856, 0.298836, 0, 0, 0)
 
 [node name="Camera3D" type="Camera3D" parent="SubViewport"]
-transform = Transform3D(0.707107, -0.298836, 0.640857, 0, 0.906308, 0.422619, -0.707107, -0.298836, 0.640857, 3.5, 2.308, 3.5)
+transform = Transform3D(0.707107, -0.40558, 0.579229, 0, 0.819152, 0.573577, -0.707107, -0.40558, 0.579229, 7, 4.616, 7)
 projection = 1
 current = true
 size = 5.0

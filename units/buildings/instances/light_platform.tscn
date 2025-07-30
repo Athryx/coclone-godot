@@ -25,6 +25,8 @@ alive_model_node = NodePath("AliveMesh")
 destroyed_model_node = NodePath("DestroyedMesh")
 unit_name = "Light3D Platform"
 aim_pos_height = 1.1
+preview_size = 4.0
+preview_y_offset = 1.1
 max_health = 500
 health_bar = NodePath("HealthBar")
 
@@ -48,7 +50,7 @@ rotate_speed_elevation = 1.0
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, -1.057, 0)
 
 [node name="ProjectileSpawner" type="Node3D" parent="AliveMesh/Aimer"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.29244, -2.02756)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.292, 2.028)
 script = ExtResource("3")
 projectile = ExtResource("4")
 initial_wait_time = 0.5

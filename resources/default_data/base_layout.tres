@@ -1,27 +1,36 @@
-[gd_resource type="Resource" script_class="BaseLayout" load_steps=6 format=3 uid="uid://b64kg5ct5cvgr"]
+[gd_resource type="Resource" script_class="BaseLayout" load_steps=11 format=3 uid="uid://b64kg5ct5cvgr"]
 
 [ext_resource type="Script" uid="uid://bh057khaj41u" path="res://resources/base_layout.gd" id="1"]
-[ext_resource type="PackedScene" uid="uid://bptc87pyvkvbc" path="res://units/buildings/instances/town_hall.tscn" id="1_ttay1"]
-[ext_resource type="PackedScene" uid="uid://cun4cy2nkmc4i" path="res://units/buildings/light_platform.tscn" id="2_mk8fn"]
-[ext_resource type="PackedScene" uid="uid://b783jvprut7as" path="res://units/buildings/instances/troop_tower.tscn" id="2_oqh8u"]
-[ext_resource type="PackedScene" uid="uid://cg5fuv4w4cq3u" path="res://units/buildings/instances/gold_mine.tscn" id="4_oqh8u"]
+[ext_resource type="Script" uid="uid://ba4jrbhod33i4" path="res://resources/building_scene_position.gd" id="1_lucfw"]
+[ext_resource type="PackedScene" uid="uid://cun4cy2nkmc4i" path="res://units/buildings/light_platform.tscn" id="2_n8e71"]
+[ext_resource type="PackedScene" uid="uid://bptc87pyvkvbc" path="res://units/buildings/instances/town_hall.tscn" id="3_esrqc"]
+[ext_resource type="PackedScene" uid="uid://b783jvprut7as" path="res://units/buildings/instances/troop_tower.tscn" id="4_62fde"]
+[ext_resource type="PackedScene" uid="uid://cg5fuv4w4cq3u" path="res://units/buildings/instances/gold_mine.tscn" id="5_jklb1"]
+
+[sub_resource type="Resource" id="Resource_wjxfj"]
+script = ExtResource("1_lucfw")
+building_scene = ExtResource("2_n8e71")
+position = Vector2i(20, 5)
+metadata/_custom_type_script = "uid://ba4jrbhod33i4"
+
+[sub_resource type="Resource" id="Resource_q77pm"]
+script = ExtResource("1_lucfw")
+building_scene = ExtResource("3_esrqc")
+position = Vector2i(50, 13)
+metadata/_custom_type_script = "uid://ba4jrbhod33i4"
+
+[sub_resource type="Resource" id="Resource_ha68q"]
+script = ExtResource("1_lucfw")
+building_scene = ExtResource("4_62fde")
+position = Vector2i(23, 48)
+metadata/_custom_type_script = "uid://ba4jrbhod33i4"
+
+[sub_resource type="Resource" id="Resource_2pb6y"]
+script = ExtResource("1_lucfw")
+building_scene = ExtResource("5_jklb1")
+position = Vector2i(30, 52)
+metadata/_custom_type_script = "uid://ba4jrbhod33i4"
 
 [resource]
 script = ExtResource("1")
-buildings = Array[Dictionary]([{
-"building": ExtResource("1_ttay1"),
-"x": 23,
-"y": 37
-}, {
-"building": ExtResource("2_oqh8u"),
-"x": 5,
-"y": 20
-}, {
-"building": ExtResource("2_mk8fn"),
-"x": 58,
-"y": 40
-}, {
-"building": ExtResource("4_oqh8u"),
-"x": 11,
-"y": 23
-}])
+buildings = Array[ExtResource("1_lucfw")]([SubResource("Resource_wjxfj"), SubResource("Resource_q77pm"), SubResource("Resource_ha68q"), SubResource("Resource_2pb6y")])

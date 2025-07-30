@@ -39,7 +39,8 @@ func _ready():
 	battle_timer.wait_time = attack_time
 	battle_info.set_time_remaining(attack_time)
 	
-	for building in PlayerData.player.base_layout.get_buildings():
+	print(PlayerData.player.base_layout.buildings)
+	for building in PlayerData.player.base_layout.buildings:
 		map.add_building(building.instantiate())
 	
 	map.finalize()

@@ -1,4 +1,4 @@
-extends "res://units/unit.gd"
+extends Unit
 class_name Building
 
 # The size of the building's footprint in tiles
@@ -100,15 +100,13 @@ func target_dist(position: Vector2) -> float:
 		return Vector2(half_damagebox_size, half_damagebox_size).distance_to(position)
 
 # returns true if destroyed
-func do_damage(damage: int) -> bool:
+func do_damage(damage: int):
 	# don't emit destroyed signal multiple times
 	if health == 0:
-		return true
+		return
 	
 	health = max(0, health - damage)
 	if health == 0:
 		emit_signal("destroyed")
 		alive_model.visible = false
 		destroyed_model.visible = true
-		return true
-	return false

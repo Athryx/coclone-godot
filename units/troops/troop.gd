@@ -1,4 +1,4 @@
-extends "res://units/unit.gd"
+extends Unit
 class_name Troop
 
 # movement speed is in tiles per second
@@ -70,17 +70,15 @@ func _physics_process(delta: float):
 	building_range_map.moved(self, old_position, position())
 
 # returns true if destroyed
-func do_damage(damage: int) -> bool:
+func do_damage(damage: int):
 	# don't emit the destroyed signal multiple times if it is already destroyed
 	if health == 0:
-		return true
+		return
 
 	health = max(0, health - damage)
 	if health == 0:
 		emit_signal("destroyed")
 		queue_free()
-		return true
-	return false
 
 # stops the unit when the battle time has ended
 func disable():

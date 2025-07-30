@@ -26,6 +26,9 @@ func aim_position() -> Vector3:
 func is_destroyed() -> bool:
 	return health == 0
 
+func do_damage(damage: int):
+	pass
+
 # used to propagate spawn projectile from chile nodes within the scene
 func emit_spawn_projectile(projectile):
 	emit_signal("spawn_projectile", projectile)

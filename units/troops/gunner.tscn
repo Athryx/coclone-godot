@@ -1,32 +1,38 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=7 format=3 uid="uid://caje2nu7nyj7e"]
 
 [ext_resource type="Script" uid="uid://i6ofe57ijw6d" path="res://units/troops/troop.gd" id="1"]
 [ext_resource type="PackedScene" path="res://projectiles/bullet.tscn" id="2"]
 [ext_resource type="Script" uid="uid://c45qmbbaysqou" path="res://projectiles/projectile_spawner.gd" id="3"]
+[ext_resource type="Script" uid="uid://dee0g7wvlngib" path="res://units/damage_effect.gd" id="4_sk60g"]
 
-[sub_resource type="CapsuleMesh" id=1]
+[sub_resource type="CapsuleMesh" id="1"]
+
+[sub_resource type="Resource" id="Resource_7ocgg"]
+script = ExtResource("4_sk60g")
+damage = 6
+area_of_effect = 0.0
+metadata/_custom_type_script = "uid://dee0g7wvlngib"
 
 [node name="Troop" type="Node3D" groups=["needs_disable"]]
-script = ExtResource( 1 )
+script = ExtResource("1")
+move_speed = 4.0
+approach_distance = 3.0
 unit_name = "Gunner"
 aim_pos_height = 1.0
 preview_size = 2.0
 max_health = 50
-move_speed = 4.0
-approach_distance = 3.0
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-transform = Transform3D( 0.5, 0, 0, 0, -2.18557e-08, -0.5, 0, 0.5, -2.18557e-08, 0, 0.824866, 0 )
-mesh = SubResource( 1 )
-material/0 = null
+transform = Transform3D(0.5, 0, 0, 0, -2.18557e-08, -0.5, 0, 0.5, -2.18557e-08, 0, 0.824866, 0)
+mesh = SubResource("1")
 
 [node name="ProjectileSpawner" type="Node3D" parent="."]
-transform = Transform3D( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.00471, 0 )
-script = ExtResource( 3 )
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.00471, 0)
+script = ExtResource("3")
+projectile = ExtResource("2")
 initial_wait_time = 0.5
 refire_time = 0.2
-projectile = ExtResource( 2 )
-damage = 6
+damage = SubResource("Resource_7ocgg")
 
 [connection signal="target_acquired" from="." to="ProjectileSpawner" method="set_target"]
 [connection signal="target_lost" from="." to="ProjectileSpawner" method="set_target"]

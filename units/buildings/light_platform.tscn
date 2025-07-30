@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://cun4cy2nkmc4i"]
+[gd_scene load_steps=12 format=3 uid="uid://cun4cy2nkmc4i"]
 
 [ext_resource type="Script" uid="uid://b8ux2rx04oois" path="res://units/buildings/building.gd" id="1"]
 [ext_resource type="Script" uid="uid://cth2miv283nlo" path="res://units/buildings/damage_range.gd" id="2"]
@@ -7,9 +7,16 @@
 [ext_resource type="PackedScene" uid="uid://bsoh14a3abtm" path="res://assets/buildings/light_platform/lvl1_machine_gun.glb" id="5"]
 [ext_resource type="Script" uid="uid://coeltgg5dv1rb" path="res://units/aimer.gd" id="6"]
 [ext_resource type="PackedScene" uid="uid://bi1kqaia0t2tc" path="res://assets/buildings/light_platform/lvl1_base.glb" id="7"]
+[ext_resource type="Script" uid="uid://dee0g7wvlngib" path="res://units/damage_effect.gd" id="7_udout"]
 [ext_resource type="PackedScene" uid="uid://dtc84e1bidkef" path="res://assets/footprints/footprint_3x3.glb" id="8"]
 
 [sub_resource type="BoxMesh" id="2"]
+
+[sub_resource type="Resource" id="Resource_s3e0y"]
+script = ExtResource("7_udout")
+damage = 10
+area_of_effect = 0.0
+metadata/_custom_type_script = "uid://dee0g7wvlngib"
 
 [node name="LightPlatform" type="Node3D" groups=["buildings"]]
 script = ExtResource("1")
@@ -41,10 +48,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.057, 0)
 [node name="ProjectileSpawner" type="Node3D" parent="AliveMesh/Aimer"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.29244, -2.02756)
 script = ExtResource("3")
+projectile = ExtResource("4")
 initial_wait_time = 0.5
 refire_time = 0.2
-projectile = ExtResource("4")
-damage = 10
+damage = SubResource("Resource_s3e0y")
 
 [node name="lvl1_base" parent="AliveMesh" instance=ExtResource("7")]
 

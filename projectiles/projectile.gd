@@ -15,7 +15,7 @@ class_name Projectile
 @export var hit_ground := false
 
 # damage is set by the projectile spawner
-var damage: int
+var damage: DamageEffect
 
 # start is a spatial
 var start
@@ -72,7 +72,7 @@ func _physics_process(delta):
 
 # called when projectile strikes the target
 # hit target is true if seeking, false if not
-func _on_hit(target, hit_target: bool):
+func _on_hit(target: Unit, hit_target: bool):
 	pass
 
 func _on_target_destroyed():

@@ -1,10 +1,11 @@
-[gd_scene load_steps=4 format=3 uid="uid://cg5fuv4w4cq3u"]
+[gd_scene load_steps=5 format=3 uid="uid://cg5fuv4w4cq3u"]
 
 [ext_resource type="Script" uid="uid://b8ux2rx04oois" path="res://units/buildings/building.gd" id="1_cu2lx"]
 [ext_resource type="PackedScene" uid="uid://dfgm4nvwehwcv" path="res://assets/buildings/broken_building_4x4.glb" id="2_sn5ot"]
 [ext_resource type="Script" uid="uid://cvyvotbd7bt0p" path="res://units/level_model.gd" id="3_4gbsh"]
+[ext_resource type="Script" uid="uid://d0ascrhuurr2b" path="res://units/health_bar.gd" id="4_sn5ot"]
 
-[node name="Building" type="Node3D" groups=["buildings"]]
+[node name="Building" type="Node3D" node_paths=PackedStringArray("health_bar") groups=["buildings"]]
 script = ExtResource("1_cu2lx")
 footprint_size = 4
 spawn_box_width = 2
@@ -15,6 +16,7 @@ destroyed_model_node = NodePath("broken_building_4x4")
 unit_name = "Gold Mine"
 aim_pos_height = 1.0
 max_health = 400
+health_bar = NodePath("HealthBar")
 metadata/_custom_type_script = "uid://b8ux2rx04oois"
 
 [node name="broken_building_4x4" parent="." instance=ExtResource("2_sn5ot")]
@@ -23,3 +25,8 @@ metadata/_custom_type_script = "uid://b8ux2rx04oois"
 script = ExtResource("3_4gbsh")
 models_folder = "res://assets/buildings/gold_mine"
 metadata/_custom_type_script = "uid://cvyvotbd7bt0p"
+
+[node name="HealthBar" type="Sprite3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+script = ExtResource("4_sn5ot")
+metadata/_custom_type_script = "uid://d0ascrhuurr2b"

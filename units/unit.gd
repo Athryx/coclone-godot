@@ -12,6 +12,8 @@ class_name Unit
 @export var max_health := 0
 @onready var health = max_health
 
+@export var health_bar: Node = null
+
 signal destroyed
 
 signal spawn_projectile(projectile)
@@ -27,7 +29,9 @@ func is_destroyed() -> bool:
 	return health == 0
 
 func do_damage(damage: int):
-	pass
+	health = max(0, health - damage)
+	if health_bar != null:
+		health_bar.set_health(max_health, health)
 
 # used to propagate spawn projectile from chile nodes within the scene
 func emit_spawn_projectile(projectile):

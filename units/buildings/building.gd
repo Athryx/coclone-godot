@@ -105,7 +105,8 @@ func do_damage(damage: int):
 	if health == 0:
 		return
 	
-	health = max(0, health - damage)
+	super.do_damage(damage)
+	
 	if health == 0:
 		emit_signal("destroyed")
 		alive_model.visible = false

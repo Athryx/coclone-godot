@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://cun4cy2nkmc4i"]
+[gd_scene load_steps=13 format=3 uid="uid://cun4cy2nkmc4i"]
 
 [ext_resource type="Script" uid="uid://b8ux2rx04oois" path="res://units/buildings/building.gd" id="1"]
 [ext_resource type="Script" uid="uid://cth2miv283nlo" path="res://units/buildings/damage_range.gd" id="2"]
@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://bi1kqaia0t2tc" path="res://assets/buildings/light_platform/lvl1_base.glb" id="7"]
 [ext_resource type="Script" uid="uid://dee0g7wvlngib" path="res://units/damage_effect.gd" id="7_udout"]
 [ext_resource type="PackedScene" uid="uid://dtc84e1bidkef" path="res://assets/footprints/footprint_3x3.glb" id="8"]
+[ext_resource type="Script" uid="uid://d0ascrhuurr2b" path="res://units/health_bar.gd" id="10_s3e0y"]
 
 [sub_resource type="BoxMesh" id="2"]
 
@@ -18,13 +19,14 @@ damage = 10
 area_of_effect = 0.0
 metadata/_custom_type_script = "uid://dee0g7wvlngib"
 
-[node name="LightPlatform" type="Node3D" groups=["buildings"]]
+[node name="LightPlatform" type="Node3D" node_paths=PackedStringArray("health_bar") groups=["buildings"]]
 script = ExtResource("1")
 alive_model_node = NodePath("AliveMesh")
 destroyed_model_node = NodePath("DestroyedMesh")
 unit_name = "Light3D Platform"
 aim_pos_height = 1.1
 max_health = 500
+health_bar = NodePath("HealthBar")
 
 [node name="DamageRange" type="Node3D" parent="." groups=["building_range", "needs_disable"]]
 script = ExtResource("2")
@@ -57,6 +59,11 @@ damage = SubResource("Resource_s3e0y")
 
 [node name="footprint_3x3" parent="." instance=ExtResource("8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.01, 0)
+
+[node name="HealthBar" type="Sprite3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+script = ExtResource("10_s3e0y")
+metadata/_custom_type_script = "uid://d0ascrhuurr2b"
 
 [connection signal="destroyed" from="." to="DamageRange" method="disable"]
 [connection signal="target_acquired" from="DamageRange" to="AliveMesh/Aimer" method="set_target"]

@@ -1,9 +1,10 @@
-[gd_scene load_steps=6 format=3 uid="uid://banccogp7rcqu"]
+[gd_scene load_steps=7 format=3 uid="uid://banccogp7rcqu"]
 
 [ext_resource type="Script" uid="uid://i6ofe57ijw6d" path="res://units/troops/troop.gd" id="1_kfnye"]
 [ext_resource type="PackedScene" uid="uid://bnavhdkx120la" path="res://assets/troops/knight.glb" id="2_jx5we"]
 [ext_resource type="Script" uid="uid://bs1qpakrq2pgs" path="res://units/melee_targeter.gd" id="3_t2hro"]
 [ext_resource type="Script" uid="uid://dee0g7wvlngib" path="res://units/damage_effect.gd" id="4_476r6"]
+[ext_resource type="Script" uid="uid://d0ascrhuurr2b" path="res://units/health_bar.gd" id="5_jx5we"]
 
 [sub_resource type="Resource" id="Resource_crhka"]
 script = ExtResource("4_476r6")
@@ -11,7 +12,7 @@ damage = 20
 area_of_effect = 0.0
 metadata/_custom_type_script = "uid://dee0g7wvlngib"
 
-[node name="Troop" type="Node3D" groups=["needs_disable"]]
+[node name="Troop" type="Node3D" node_paths=PackedStringArray("health_bar") groups=["needs_disable"]]
 script = ExtResource("1_kfnye")
 move_speed = 2.7
 approach_distance = 0.8
@@ -20,6 +21,7 @@ unit_name = "Knight"
 aim_pos_height = 1.0
 preview_size = 2.0
 max_health = 100
+health_bar = NodePath("HealthBar")
 metadata/_custom_type_script = "uid://i6ofe57ijw6d"
 
 [node name="knight" parent="." instance=ExtResource("2_jx5we")]
@@ -31,6 +33,12 @@ initial_wait_time = 0.3
 refire_time = 1.0
 damage = SubResource("Resource_crhka")
 metadata/_custom_type_script = "uid://bs1qpakrq2pgs"
+
+[node name="HealthBar" type="Sprite3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
+script = ExtResource("5_jx5we")
+width = 100
+metadata/_custom_type_script = "uid://d0ascrhuurr2b"
 
 [connection signal="target_acquired" from="." to="MeleeTargeter" method="set_target"]
 [connection signal="target_lost" from="." to="MeleeTargeter" method="set_target"]

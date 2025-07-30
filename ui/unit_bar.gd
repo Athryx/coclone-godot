@@ -27,7 +27,7 @@ func add_unit(unit: PackedScene, count: int = 1):
 	if units.has(unit.resource_path):
 		var unit_bar_unit = units[unit.resource_path]
 		unit_bar_unit.count += count
-		unit_bar_unit.icon.set_text(String(unit_bar_unit.count))
+		unit_bar_unit.icon.set_text(str(unit_bar_unit.count))
 	else:
 		var unit_bar_unit := UnitBarUnit.new(unit, count)
 		var icon = UnitIcon.instantiate()

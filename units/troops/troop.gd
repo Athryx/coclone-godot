@@ -95,8 +95,9 @@ func do_damage(damage: int):
 	# don't emit the destroyed signal multiple times if it is already destroyed
 	if health == 0:
 		return
-
-	health = max(0, health - damage)
+		
+	super.do_damage(damage)
+	
 	if health == 0:
 		emit_signal("destroyed")
 		queue_free()

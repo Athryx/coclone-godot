@@ -4,6 +4,7 @@ extends Node3D
 @export var attack_time := 180
 
 const Gunner = preload("res://units/troops/gunner.tscn")
+const Knight = preload("res://units/troops/instances/knight.tscn")
 
 @onready var map = $Map
 @onready var battle_timer = $BattleTimer
@@ -39,7 +40,6 @@ func _ready():
 	battle_timer.wait_time = attack_time
 	battle_info.set_time_remaining(attack_time)
 	
-	print(PlayerData.player.base_layout.buildings)
 	for building in PlayerData.player.base_layout.buildings:
 		map.add_building(building.instantiate())
 	
@@ -47,6 +47,7 @@ func _ready():
 	
 	# temp
 	troop_bar.add_unit(Gunner, 50)
+	troop_bar.add_unit(Knight, 10)
 	
 	var buildings := get_tree().get_nodes_in_group("buildings")
 	

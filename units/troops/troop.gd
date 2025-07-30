@@ -8,6 +8,10 @@ class_name Troop
 # this is the distance from their damage box
 @export var approach_distance := 0.0
 
+# how fast the troop will rotate to face its next target
+# this is in degrees per second
+@export var rotation_speed := 0.0
+
 # position where the troop was spawned in at
 var spawn_pos := Vector2(0.0, 0.0)
 
@@ -54,19 +58,36 @@ func _physics_process(delta: float):
 	if current_target == null:
 		return
 	
+	var move_direction: Vector2 = current_target.position() - position()
+	
+	# rotation
+	# z faces target
+	var forward_vec := Vector2(basis.z.x, basis.z.z)
+	var angle := forward_vec.angle_to(move_direction)
+	var max_rotation_amount := deg_to_rad(delta * rotation_speed)
+	
+	var rotate_amount = 0.0
+	if angle > 0.0:
+		rotate_amount = max(-angle, -max_rotation_amount)
+	else:
+		rotate_amount = min(-angle, max_rotation_amount)
+	
+	rotate_y(rotate_amount)
+	
 	if current_target.target_dist(position()) <= approach_distance:
 		if last_target_signal == LastTargetSignal.TARGET_LOST:
 			emit_signal("target_acquired", current_target)
 			last_target_signal = LastTargetSignal.TARGET_ACQUIRED
 		return
 	
+	# translation
 	var move_distance := delta * move_speed
 	
-	var move_direction: Vector2 = current_target.position() - position()
 	var move_vector := move_distance * move_direction.normalized()
 	
 	var old_position := position()
-	translate(Util.vector2_to_vector3(move_vector))
+	#translate(Util.vector2_to_vector3(move_vector))
+	self.transform.origin += Util.vector2_to_vector3(move_vector)
 	building_range_map.moved(self, old_position, position())
 
 # returns true if destroyed

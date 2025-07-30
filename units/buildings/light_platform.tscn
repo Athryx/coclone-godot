@@ -43,7 +43,7 @@ rotate_speed_azimuth = 6.5
 rotate_speed_elevation = 1.0
 
 [node name="lvl1_machine_gun" parent="AliveMesh/Aimer" instance=ExtResource("5")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.057, 0)
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, -1.057, 0)
 
 [node name="ProjectileSpawner" type="Node3D" parent="AliveMesh/Aimer"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.29244, -2.02756)

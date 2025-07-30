@@ -31,7 +31,7 @@ func target_direction() -> Vector3:
 
 # returns the direction of where the aimer is currently aiming
 func aim_direction() -> Vector3:
-	return global_transform.basis * (Vector3(0.0, 0.0, -1.0)).normalized()
+	return global_transform.basis * (Vector3(0.0, 0.0, 1.0)).normalized()
 
 func _physics_process(delta: float):
 	if current_target == null:

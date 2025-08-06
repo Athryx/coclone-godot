@@ -22,3 +22,6 @@ func set_texture(texture: Texture2D):
 
 func _on_Button_pressed():
 	emit_signal("clicked")
+
+func release_button_focus():
+	$Button.release_focus()

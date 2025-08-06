@@ -67,4 +67,5 @@ func dec_current_unit():
 		current_unit.icon.set_text(str(current_unit.count))
 
 func deselect_unit():
+	current_unit.icon.release_button_focus()
 	current_unit = null

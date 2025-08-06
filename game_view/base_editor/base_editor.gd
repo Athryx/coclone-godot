@@ -20,6 +20,11 @@ func _ready():
 func _on_GameArea_position_clicked(position: Vector2):
 	var tile := Util.position_to_tile_pos(position)
 	
+	# handle case of selected unit changing
+	if selected_building != null:
+		if not Util.is_instance_of_scene(selected_building, building_bar.get_current_unit_scene()):
+			deselect_building()
+	
 	# TODO: handle dragged building
 	if selected_building != null:
 		selected_building.set_corner_position(tile)
@@ -49,12 +54,13 @@ func _on_game_area_position_mouseover(position: Vector2) -> void:
 		deselect_building()
 		return
 	
+	# handle case of selected unit changing
+	if selected_building != null:
+		if not Util.is_instance_of_scene(selected_building, building_bar.get_current_unit_scene()):
+			deselect_building()
+	
 	var tile := Util.position_to_tile_pos(position)
 	if selected_building == null:
-		selected_building = building_bar.get_current_unit()
-		add_child(selected_building)
-	elif not Util.is_instance_of_scene(selected_building, building_bar.get_current_unit_scene()):
-		deselect_building()
 		selected_building = building_bar.get_current_unit()
 		add_child(selected_building)
 	

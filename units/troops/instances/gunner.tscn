@@ -19,6 +19,7 @@ script = ExtResource("1")
 move_speed = 4.0
 approach_distance = 3.0
 rotation_speed = 300.0
+pathing_dps = 300
 unit_name = "Gunner"
 aim_pos_height = 1.0
 preview_size = 1.7

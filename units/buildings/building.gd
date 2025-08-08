@@ -18,17 +18,6 @@ class_name Building
 # Only square damage boxes are supported
 @export var damagebox_size := 3.0
 
-# Determines when units will target this building
-enum TargetMode {
-	# Never targeted
-	NEVER,
-	# Targeted if it is in the way (eg walls)
-	OBSTACLE,
-	# Always targeted
-	ALWAYS,
-}
-@export var target_mode := TargetMode.ALWAYS
-
 # Weather or not the building contributes to the percent destruction
 @export var percent_contributor := true
 
@@ -83,6 +72,10 @@ func footprint_bounds() -> TileBounds:
 	var min_corner := get_corner_position()
 	var max_corner := min_corner + Vector2i(footprint_size, footprint_size)
 	return TileBounds.new(min_corner, max_corner)
+
+func hitbox_bounds() -> Rect2:
+	var half_hitbox := Vector2(hitbox_size / 2, hitbox_size / 2)
+	return Rect2(position() - half_hitbox, Vector2(hitbox_size, hitbox_size))
 
 # returns tile bounds which show the min and max corner of the spawn box,
 # otherwise returns null if the building doesn't have a spawn box

@@ -12,6 +12,10 @@ class_name Troop
 # this is in degrees per second
 @export var rotation_speed := 0.0
 
+# affects how much time pathing algorithm will consider this troop to take
+# to destroy an obstacle in its path, effectively dps pathing algorithm considers
+@export var pathing_dps := 0
+
 # position where the troop was spawned in at
 var spawn_pos := Vector2(0.0, 0.0)
 

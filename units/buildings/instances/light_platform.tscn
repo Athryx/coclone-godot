@@ -24,6 +24,7 @@ script = ExtResource("1")
 alive_model_node = NodePath("AliveMesh")
 destroyed_model_node = NodePath("DestroyedMesh")
 unit_name = "Light3D Platform"
+unit_groups = 3
 aim_pos_height = 1.1
 preview_size = 4.0
 preview_y_offset = 1.1

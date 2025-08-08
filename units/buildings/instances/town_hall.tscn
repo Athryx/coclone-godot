@@ -14,6 +14,7 @@ damagebox_size = 6.0
 alive_model_node = NodePath("LevelModel")
 destroyed_model_node = NodePath("broken_building_6x6")
 unit_name = "Town Hall"
+unit_groups = 1
 aim_pos_height = 1.5
 preview_size = 8.0
 preview_y_offset = 1.5

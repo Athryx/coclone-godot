@@ -8,4 +8,4 @@ const BaseEditor = preload("res://game_view/base_editor/base_editor.tscn")
 func _ready():
 	PlayerData.player = player
 	print(player.base_layout.buildings)
-	add_child(BaseEditor.instantiate())
+	add_child(Attack.instantiate())

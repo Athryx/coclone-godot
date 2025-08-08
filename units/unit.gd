@@ -5,6 +5,19 @@ class_name Unit
 
 @export var unit_name := ""
 
+enum UnitGroup {
+	NON_WALL = 1,
+	DEFENSE = 2,
+}
+# unit groups this unit is a part of
+@export_flags("Non Wall:1", "Defense:2") var unit_groups := 0
+# unit groups this unit will target
+@export_flags("Non Wall:1", "Defense:2") var targeted_unit_groups := 0
+
+# checks if this unit targets the other unit
+func targets_unit(other: Unit) -> bool:
+	return (other.unit_groups & self.targeted_unit_groups) != 0
+
 @export var aim_pos_height := 0.0
 
 @export var preview_size := 5.0

@@ -6,7 +6,6 @@ extends Node3D
 @export var map_edge_width := 3
 
 const Building = preload("res://units/buildings/building.gd")
-const TargetMode = Building.TargetMode
 
 const BuildingRangeMap = preload("res://units/buildings/building_range_map.gd")
 
@@ -30,7 +29,7 @@ const TileBounds = preload("res://util/tile_bounds.gd")
 var building_dist_map := []
 
 func generate_building_dist_map():
-	var buildings := get_tree().get_nodes_in_group("buildings")
+	var buildings := get_buildings()
 	
 	for x in map_size:
 		var building_dist_row := []
@@ -41,9 +40,6 @@ func generate_building_dist_map():
 			var tile_pos := Vector2(x as float + 0.5, y as float + 0.5)
 			
 			for building in buildings:
-				if building.target_mode != TargetMode.ALWAYS:
-					continue
-				
 				var tile_building_dist := TileBuildingDist.new(
 					building.target_dist(tile_pos),
 					building
@@ -131,8 +127,10 @@ func finalize():
 	building_range_map = BuildingRangeMap.new(get_tree().get_nodes_in_group("building_range"))
 	generate_spawn_pos_mesh()
 	
-	for building in get_tree().get_nodes_in_group("buildings"):
+	for building in get_buildings():
 		building.connect("spawn_projectile", Callable(self, "_on_spawn_projectile"))
+	
+	generate_pathing_nodes()
 
 func add_building(building: Building) -> bool:
 	var footprint_bounds := building.footprint_bounds()
@@ -153,6 +151,11 @@ func add_building(building: Building) -> bool:
 	add_child(building)
 	
 	return true
+
+func get_buildings() -> Array[Building]:
+	var buildings: Array[Building]
+	buildings.assign(get_tree().get_nodes_in_group("buildings"))
+	return buildings
 
 # returns true if the tile is within the map bounds
 func is_valid_tile_pos(tile: Vector2i) -> bool:
@@ -247,6 +250,205 @@ func disable():
 	disabled = true
 	get_tree().call_group("needs_disable", "disable")
 
+func _on_spawn_projectile(projectile):
+	if disabled:
+		return
+	
+	add_child(projectile)
+
+enum PathingNodeType {
+	BUILDING = 0,
+	NEGX_NEGY_CORNER = 1,
+	NEGX_POSY_CORNER = 2,
+	POSX_NEGY_CORNER = 3,
+	POSX_POSY_CORNER = 4,
+}
+
+# Unit pathing logic below
+class PathingNode:
+	extends RefCounted
+	
+	# the buildings thie pathing node is associated with
+	var building: Building
+	var node_type: PathingNodeType
+	var position: Vector2
+	var connections: Array[PathingNodeConnection] = []
+	
+	func _init(building: Building, node_type: PathingNodeType, position: Vector2) -> void:
+		self.building = building
+		self.position = position
+	
+	func can_connect_to(other_node_position: Vector2) -> bool:
+		var node_direction: Vector2
+		match node_type:
+			PathingNodeType.BUILDING:
+				return true
+			PathingNodeType.NEGX_NEGY_CORNER:
+				node_direction = Vector2(-1.0, -1.0)
+			PathingNodeType.NEGX_POSY_CORNER:
+				node_direction = Vector2(-1.0, 1.0)
+			PathingNodeType.POSX_NEGY_CORNER:
+				node_direction = Vector2(1.0, -1.0)
+			PathingNodeType.POSX_POSY_CORNER:
+				node_direction = Vector2(1.0, 1.0)
+		
+		var relative_position := other_node_position - self.position
+		return relative_position.x * node_direction.x >= 0.0 or relative_position.y * node_direction.y >= 0.0
+
+class PathingNodeConnection:
+	extends RefCounted
+	
+	var node_index: int
+	# buildings obstructing the path from node to target node at node_index
+	var intermediate_buildings: Array[Building]
+	
+	func _init(node_index: int, buildings: Array[Building]):
+		self.node_index = node_index
+		self.intermediate_buildings = buildings
+	
+	static func sort_connections(start_position: Vector2, map, connections):
+		# sorts based on distance between nodes
+		var sort_fn = func (connection1, connection2):
+			var pos1: Vector2 = map.pathing_nodes[connection1.node_index].position
+			var dist1 := (start_position - pos1).length_squared()
+			var pos2: Vector2 = map.pathing_nodes[connection2.node_index].position
+			var dist2 := (start_position - pos2).length_squared()
+			
+			return dist1 < dist2
+		
+		connections.sort_custom(sort_fn)
+
+var pathing_nodes: Array[PathingNode] = []
+
+# returns a list of buildings between the line segment from start to end
+# currently just walks the tiles, but a better approach could be
+# a filling in empty tiles with larger regions, so empty squares do not cost as much time to deal with
+func buildings_between(buildings: Array[Building], start: Vector2, end: Vector2, ignore_building: Building) -> Array[Building]:
+	var out: Array[Building] = []
+	
+	for building in buildings:
+		# don't include the building we want to ignore
+		if building == ignore_building:
+			continue
+		
+		var hitbox := building.hitbox_bounds()
+		if Util.segment_intersects_rect(start, end, hitbox):
+			out.append(building)
+	
+	return out
+
+func connect_pathing_nodes(all_buildings: Array[Building], start_index: int, end_index: int):
+	var start_node := pathing_nodes[start_index]
+	var end_node := pathing_nodes[end_index]
+	
+	# ignore building if both nodes are edge nodes on the same bulding
+	# these nodes should always be connected
+	var ignore_building: Building = null
+	if start_node.building == end_node.building:
+		ignore_building = start_node.building
+	else:
+		# for connections between different building nodes, ignore connection if it is
+		# outside of node 270 degree pov (ie. corner node can't go between its own building
+		if not (start_node.can_connect_to(end_node.position) and end_node.can_connect_to(start_node.position)):
+			return
+	
+	var buildings := buildings_between(all_buildings, start_node.position, end_node.position, ignore_building)
+	
+	start_node.connections.append(PathingNodeConnection.new(end_index, buildings))
+	end_node.connections.append(PathingNodeConnection.new(start_index, buildings))
+
+func generate_pathing_nodes():
+	pathing_nodes = []
+	troop_approximation_map = {}
+	var buildings := get_buildings()
+	
+	for building in buildings:
+		var base_index := pathing_nodes.size()
+		
+		var bounds: TileBounds = building.footprint_bounds()
+		pathing_nodes.append_array([
+			PathingNode.new(building, PathingNodeType.BUILDING, building.position()),
+			PathingNode.new(building, PathingNodeType.NEGX_NEGY_CORNER, Vector2(bounds.min_corner)),
+			PathingNode.new(building, PathingNodeType.NEGX_POSY_CORNER, Vector2(bounds.min_corner.x, bounds.max_corner.y)),
+			PathingNode.new(building, PathingNodeType.POSX_NEGY_CORNER, Vector2(bounds.max_corner.x, bounds.min_corner.y)),
+			PathingNode.new(building, PathingNodeType.POSX_POSY_CORNER, Vector2(bounds.max_corner)),
+		])
+		
+		connect_pathing_nodes(buildings, base_index + 1, base_index + 2)
+		connect_pathing_nodes(buildings, base_index + 1, base_index + 3)
+		connect_pathing_nodes(buildings, base_index + 4, base_index + 2)
+		connect_pathing_nodes(buildings, base_index + 4, base_index + 3)
+		
+		for i in range(0, base_index / 5):
+			var other_building: Building = buildings[i]
+			var other_base_index := 5 * i
+			
+			for src_node_type in range(1, 5):
+				for target_node_type in range(5):
+					# TODO: don't connect nodes which are on a corner of a building directly facing src node
+					# these nodes would never be pathed to as part of the real shortest path
+					# TODO: don't connect nodes if the path passes over another corner node
+					
+					connect_pathing_nodes(buildings, base_index + src_node_type, other_base_index + target_node_type)
+	
+	for node in pathing_nodes:
+		# sorts based on distance between nodes
+		var sort_fn = func (connection1, connection2):
+			var pos1 := pathing_nodes[connection1.node_index].position
+			var dist1 := (node.position - pos1).length_squared()
+			var pos2 := pathing_nodes[connection2.node_index].position
+			var dist2 := (node.position - pos2).length_squared()
+			
+			return dist1 < dist2
+		
+		node.connections.sort_custom(sort_fn)
+
+# keeps track of all pathing nodes that can be moved to from a point close to this pint
+# there is a grid of troop approximation points, which are lazily crated when needed by troop close by
+# it stores sorted order of buildings in distance order, and the buildings intersected along way to each pathing node
+# 2 close pathing nodes on the grid can be used to quickly determine which buildings are in the way of troop pathing
+class TroopApproximationPoint:
+	extends RefCounted
+	
+	var position: Vector2
+	var connections: Array[PathingNodeConnection]
+	
+	func _init(position: Vector2, map):
+		self.position = position
+		self.connections = []
+		
+		var all_buildings = map.get_buildings()
+		
+		for i in range(map.pathing_nodes.size()):
+			var node: PathingNode = map.pathing_nodes[i]
+			var buildings: Array[Building] = map.buildings_between(all_buildings, position, node.position, null)
+			
+			connections.append(PathingNodeConnection.new(i, buildings))
+
+var troop_approximation_map: Dictionary[Vector2i, TroopApproximationPoint]
+func get_troop_approximation_point(pos: Vector2i) -> TroopApproximationPoint:
+	if pos in troop_approximation_map:
+		return troop_approximation_map[pos]
+	else:
+		var out := TroopApproximationPoint.new(Vector2(pos), self)
+		troop_approximation_map[pos] = out
+		return out
+
+class InitialTargetResult:
+	extends RefCounted
+	
+	var nodes: BinaryHeap
+
+func find_initial_targets(troop: Troop) -> BinaryHeap:
+	var targets := BinaryHeap.new()
+	# TODO
+	return targets
+
+func set_target(troop: Troop):
+	var next_nodes := find_initial_targets(troop)
+	
+	pass
+
 func _on_needs_target(troop):
 	if disabled:
 		return
@@ -270,9 +472,3 @@ func _on_needs_target(troop):
 		i += 1
 	
 	troop.set_target(target)
-
-func _on_spawn_projectile(projectile):
-	if disabled:
-		return
-	
-	add_child(projectile)

@@ -335,6 +335,13 @@ func buildings_between(buildings: Array[Building], start: Vector2, end: Vector2,
 		if Util.segment_intersects_rect(start, end, hitbox):
 			out.append(building)
 	
+	var sort_fn = func (building1, building2):
+		var dist1: float = (building1.position() - start).length_squared()
+		var dist2: float = (building2.position() - start).length_squared()
+		
+		return dist1 < dist2
+	out.sort_custom(sort_fn)
+	
 	return out
 
 func connect_pathing_nodes(all_buildings: Array[Building], start_index: int, end_index: int):
@@ -392,16 +399,7 @@ func generate_pathing_nodes():
 					connect_pathing_nodes(buildings, base_index + src_node_type, other_base_index + target_node_type)
 	
 	for node in pathing_nodes:
-		# sorts based on distance between nodes
-		var sort_fn = func (connection1, connection2):
-			var pos1 := pathing_nodes[connection1.node_index].position
-			var dist1 := (node.position - pos1).length_squared()
-			var pos2 := pathing_nodes[connection2.node_index].position
-			var dist2 := (node.position - pos2).length_squared()
-			
-			return dist1 < dist2
-		
-		node.connections.sort_custom(sort_fn)
+		PathingNodeConnection.sort_connections(node.position, self, node.connections)
 
 # keeps track of all pathing nodes that can be moved to from a point close to this pint
 # there is a grid of troop approximation points, which are lazily crated when needed by troop close by
@@ -412,6 +410,8 @@ class TroopApproximationPoint:
 	
 	var position: Vector2
 	var connections: Array[PathingNodeConnection]
+	# array where index is node index, and value is connection to that node
+	var node_index_to_connection: Array[int]
 	
 	func _init(position: Vector2, map):
 		self.position = position
@@ -424,6 +424,117 @@ class TroopApproximationPoint:
 			var buildings: Array[Building] = map.buildings_between(all_buildings, position, node.position, null)
 			
 			connections.append(PathingNodeConnection.new(i, buildings))
+		
+		PathingNodeConnection.sort_connections(position, map, connections)
+		
+		# use range to make array of given size
+		node_index_to_connection = range(connections.size())
+		for i in range(connections.size()):
+			node_index_to_connection[connections[i].node_index] = i
+	
+	func connection_for_node(node_index: int) -> PathingNodeConnection:
+		return connections[node_index_to_connection[node_index]]
+
+enum Corner {
+	NEGX_NEGY = 0,
+	NEGX_POSY = 1,
+	POSX_NEGY = 2,
+	POSX_POSY = 3,
+}
+
+class TroopApproximationInfo:
+	extends RefCounted
+	
+	var map
+	var point: Vector2
+	# 4 corners around troop
+	var corners: Array[TroopApproximationPoint]
+	var closest_point: TroopApproximationPoint
+	
+	func _init(map, point: Vector2):
+		self.point = point
+		var base := Vector2i(point)
+		
+		corners = [
+			map.get_troop_approximation_point(base + Vector2i(0, 0)),
+			map.get_troop_approximation_point(base + Vector2i(0, 1)),
+			map.get_troop_approximation_point(base + Vector2i(1, 0)),
+			map.get_troop_approximation_point(base + Vector2i(1, 1)),
+		]
+		
+		var offset := point - Vector2(base)
+		var index := 0
+		if offset.y > 0.5:
+			index += 1
+		if offset.x > 0.5:
+			index += 2
+		
+		closest_point = corners[index]
+		
+		self.map = map
+		self.corners = corners
+		self.closest_point = closest_point
+	
+	func buildings_to_node(node_index: int) -> Array[Building]:
+		var start_point := point
+		var pathing_node: PathingNode = map.pathing_nodes[node_index]
+		var node_direction = pathing_node.position - start_point
+		
+		# Select 2 of the 4 nodes around the start point to use for finding buildings along path
+		# these nodes should be the vertexes on the side which the line segment leaves the square from
+		# these will intersec all buildings outside of the approximation box
+		# ohowever, it is assumed no buulding is in the approximation box
+		# this is because either the troop is inside the building, which can't happen if it
+		# is alive, or it is destroyed in which case it is irrelevent for pathing
+		# or the building hitbox is smaller then the minimum size for approximation to work
+		
+		var point1: TroopApproximationPoint = null
+		var point2: TroopApproximationPoint = null
+		
+		for segment_indexes in [
+			[Corner.NEGX_NEGY, Corner.NEGX_POSY],
+			[Corner.POSX_NEGY, Corner.POSX_POSY],
+			[Corner.NEGX_NEGY, Corner.POSX_NEGY],
+			[Corner.NEGX_POSY, Corner.POSX_POSY],
+		]:
+			var node1 := corners[segment_indexes[0]]
+			var node2 := corners[segment_indexes[1]]
+			
+			var vec1 := node1.position - start_point
+			var vec2 := node2.position - start_point
+			
+			if node_direction.cross(vec1) * node_direction.cross(vec2) <= 0.0:
+				point1 = node1
+				point2 = node2
+				break
+		
+		assert(point1 != null and point2 != null)
+		
+		var connection1 := point1.connection_for_node(node_index)
+		var connection2 := point2.connection_for_node(node_index)
+		
+		var out := []
+		
+		var building_set := Set.new()
+		# first collect buildings in first node
+		for building in connection1.intermediate_buildings:
+			building_set.add(building)
+		
+		for building in connection2.intermediate_buildings:
+			if building_set.contains(building):
+				out.append(building)
+				building_set.remove(building)
+			else:
+				var hitbox := building.hitbox_bounds()
+				if Util.segment_intersects_rect(start_point, pathing_node.position, hitbox):
+					out.append(building)
+		
+		for building in building_set.values():
+			var hitbox: Rect2 = building.hitbox_bounds()
+			if Util.segment_intersects_rect(start_point, pathing_node.position, hitbox):
+				out.append(building)
+		
+		return out
 
 var troop_approximation_map: Dictionary[Vector2i, TroopApproximationPoint]
 func get_troop_approximation_point(pos: Vector2i) -> TroopApproximationPoint:
@@ -434,6 +545,9 @@ func get_troop_approximation_point(pos: Vector2i) -> TroopApproximationPoint:
 		troop_approximation_map[pos] = out
 		return out
 
+func get_troop_approximation_info(pos: Vector2) -> TroopApproximationInfo:
+	return TroopApproximationInfo.new(self, pos)
+
 class InitialTargetResult:
 	extends RefCounted
 	
@@ -441,7 +555,27 @@ class InitialTargetResult:
 
 func find_initial_targets(troop: Troop) -> BinaryHeap:
 	var targets := BinaryHeap.new()
-	# TODO
+	var approximation_info := get_troop_approximation_info(troop.position())
+	
+	var closest_building_score := INF
+	
+	for connection in approximation_info.closest_point.connections:
+		var pathing_node := pathing_nodes[connection.node_index]
+		# skip targeting building which this unit doesn't target
+		if pathing_node.node_type == PathingNodeType.BUILDING and not troop.targets_unit(pathing_node.building):
+			continue
+		
+		var distance := (troop.position() - pathing_node.position).length()
+		if troop.pathing_cost(distance, []) >= closest_building_score:
+			break
+		
+		var buildings := approximation_info.buildings_to_node(connection.node_index)
+		var cost := troop.pathing_cost(distance, buildings)
+		if pathing_node.node_type == PathingNodeType.BUILDING and troop.targets_unit(pathing_node.building) and cost < closest_building_score:
+			closest_building_score = cost
+		
+		targets.insert(pathing_node, cost)
+	
 	return targets
 
 func set_target(troop: Troop):

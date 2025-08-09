@@ -50,6 +50,12 @@ func set_target(building):
 		current_target = building
 		current_target.connect("destroyed", Callable(self, "_on_current_target_destroyed").bind(), CONNECT_ONE_SHOT)
 
+func pathing_cost(distance: float, buildings: Array[Building]) -> float:
+	var cost := distance / move_speed
+	for building in buildings:
+		cost += building.health / pathing_dps
+	return cost
+
 func tile() -> Vector2i:
 	return Util.position_to_tile_pos(position())
 

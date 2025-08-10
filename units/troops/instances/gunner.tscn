@@ -21,6 +21,7 @@ approach_distance = 3.0
 rotation_speed = 300.0
 pathing_dps = 300
 unit_name = "Gunner"
+targeted_unit_groups = 1
 aim_pos_height = 1.0
 preview_size = 1.7
 preview_y_offset = 3.25

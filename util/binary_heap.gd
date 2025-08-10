@@ -42,9 +42,10 @@ func extract() -> Variant:
 	# If the tree is not empty, replace the root of the heap with the last
 	# element on the last level.
 	if not self.is_empty():
-		var back_element = self._data.pop_back()
-		self._element_to_index[back_element.element] = 0
+		var back_element: BinHeapElement = self._data[-1]
 		self._data[0] = back_element
+		self._data.resize(self._data.size() - 1)
+		self._element_to_index[back_element.element] = 0
 		self._down_heap(0)
 	return result.element
 

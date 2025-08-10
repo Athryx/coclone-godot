@@ -19,6 +19,7 @@ approach_distance = 0.8
 rotation_speed = 300.0
 pathing_dps = 200
 unit_name = "Knight"
+targeted_unit_groups = 1
 aim_pos_height = 1.0
 preview_size = 2.5
 preview_y_offset = 3.5

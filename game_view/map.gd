@@ -276,6 +276,7 @@ class PathingNode:
 	
 	func _init(building: Building, node_type: PathingNodeType, position: Vector2) -> void:
 		self.building = building
+		self.node_type = node_type
 		self.position = position
 	
 	func can_connect_to(other_node_position: Vector2) -> bool:
@@ -428,7 +429,7 @@ class TroopApproximationPoint:
 		PathingNodeConnection.sort_connections(position, map, connections)
 		
 		# use range to make array of given size
-		node_index_to_connection = range(connections.size())
+		node_index_to_connection.assign(range(connections.size()))
 		for i in range(connections.size()):
 			node_index_to_connection[connections[i].node_index] = i
 	
@@ -513,7 +514,7 @@ class TroopApproximationInfo:
 		var connection1 := point1.connection_for_node(node_index)
 		var connection2 := point2.connection_for_node(node_index)
 		
-		var out := []
+		var out: Array[Building] = []
 		
 		var building_set := Set.new()
 		# first collect buildings in first node
@@ -578,22 +579,30 @@ func find_initial_targets(troop: Troop) -> InitialTargetResult:
 	var approximation_info := get_troop_approximation_info(troop.position())
 	
 	var closest_building_score := INF
-	var node_to_path_info_map := {}
+	var node_to_path_info_map: Dictionary[PathingNode, NodePathInfo] = {}
 	
+	print(approximation_info.closest_point.connections)
 	for connection in approximation_info.closest_point.connections:
 		var pathing_node := pathing_nodes[connection.node_index]
+		print(pathing_node.node_type)
 		# skip targeting building which this unit doesn't target
 		if pathing_node.node_type == PathingNodeType.BUILDING and (not troop.targets_unit(pathing_node.building) or pathing_node.building.is_destroyed()):
+			print(pathing_node.building.name)
+			print(troop.targets_unit(pathing_node.building))
+			print(pathing_node.building.is_destroyed())
+			print('untargetable')
 			continue
 		
 		var distance := (troop.position() - pathing_node.position).length()
 		# if we have a building which is has a cost less then what a building at
 		# this distance would have, we can stop looking
 		if troop.pathing_cost(distance, []) >= closest_building_score:
+			print('prune')
 			break
 		
 		var buildings := approximation_info.buildings_to_node(connection.node_index)
 		var cost := troop.pathing_cost(distance, buildings)
+		print(cost)
 		if pathing_node.node_type == PathingNodeType.BUILDING and troop.targets_unit(pathing_node.building) and cost < closest_building_score:
 			closest_building_score = cost
 		
@@ -606,6 +615,7 @@ func find_initial_targets(troop: Troop) -> InitialTargetResult:
 # gets a path to a target for the troop, or null if no more buildings left which troop can target
 func get_target_path(troop: Troop) -> NodePathInfo:
 	var state := find_initial_targets(troop)
+	print(state)
 	var visited_nodes := Set.new()
 	
 	var selected_path: NodePathInfo = null
@@ -654,29 +664,30 @@ func get_target_path(troop: Troop) -> NodePathInfo:
 	
 	return selected_path
 
-func set_target(troop: Troop):
+func set_troop_path(troop: Troop):
 	var path := get_target_path(troop)
+	if path == null:
+		troop.set_path(null, null)
+		return
+	
+	var final_target := path.dst_node.building
+	
+	# convert path to troop actions
+	var troop_actions := []
+	for connection in path.connections:
+		for building in connection.intermediate_buildings:
+			troop_actions.append(Troop.TroopAction.attack_building(building))
+		
+		var node := pathing_nodes[connection.node_index]
+		if node.node_type == PathingNodeType.BUILDING:
+			troop_actions.append(Troop.TroopAction.attack_building(node.building))
+		else:
+			troop_actions.append(Troop.TroopAction.move(node.position))
+	
+	troop.set_path(troop_actions, final_target)
 
 func _on_needs_target(troop):
 	if disabled:
 		return
 	
-	# for now, just look for the closest building, we'll worry about hitboxes and walls later
-	var troop_tile: Vector2i = troop.tile()
-	var target = null
-	var tile_dist_list: Array = building_dist_map[troop_tile.x][troop_tile.y]
-	
-	var i := 0
-	while i < tile_dist_list.size():
-		var building_tile: TileBuildingDist = tile_dist_list[i]
-		
-		if building_tile.building.is_destroyed():
-			tile_dist_list.remove_at(i)
-			continue
-		
-		# for now, just select the first target available
-		target = building_tile.building
-		break
-		i += 1
-	
-	troop.set_target(target)
+	set_troop_path(troop)

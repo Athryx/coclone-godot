@@ -43,17 +43,6 @@ var path = null
 var path_index := 0
 var final_target: Building = null
 
-var current_target = null
-
-func set_target(building):
-	if building == null and current_target != null:
-		current_target = null
-		emit_signal("target_lost")
-		last_target_signal = LastTargetSignal.TARGET_LOST
-	elif building != null:
-		current_target = building
-		current_target.connect("destroyed", Callable(self, "_on_current_target_destroyed").bind(), CONNECT_ONE_SHOT)
-
 func pathing_cost(distance: float, buildings: Array[Building]) -> float:
 	var cost := distance / move_speed
 	for building in buildings:
@@ -105,19 +94,14 @@ func tile() -> Vector2i:
 
 func _ready():
 	global_transform.origin = Vector3(spawn_pos.x, 0.0, spawn_pos.y)
-	if current_target == null:
+	if path == null:
 		emit_signal("needs_target")
 
-func _physics_process(delta: float):
-	if current_target == null:
-		return
-	
-	var move_direction: Vector2 = current_target.position() - position()
-	
+func rotate_towards(delta: float, direction: Vector2):
 	# rotation
 	# z faces target
 	var forward_vec := Vector2(basis.z.x, basis.z.z)
-	var angle := forward_vec.angle_to(move_direction)
+	var angle := forward_vec.angle_to(direction)
 	var max_rotation_amount := deg_to_rad(delta * rotation_speed)
 	
 	var rotate_amount = 0.0
@@ -127,22 +111,63 @@ func _physics_process(delta: float):
 		rotate_amount = min(-angle, max_rotation_amount)
 	
 	rotate_y(rotate_amount)
+
+# returns true when done
+func move_to_point(delta: float, target_position: Vector2) -> bool:
+	var move_direction: Vector2 = target_position - position()
 	
-	if current_target.target_dist(position()) <= approach_distance:
-		if last_target_signal == LastTargetSignal.TARGET_LOST:
-			emit_signal("target_acquired", current_target)
-			last_target_signal = LastTargetSignal.TARGET_ACQUIRED
-		return
+	# don't move if we have reached target point
+	if move_direction.length() < 0.0001:
+		return true
 	
-	# translation
+	rotate_towards(delta, move_direction)
+	
 	var move_distance := delta * move_speed
 	
 	var move_vector := move_distance * move_direction.normalized()
 	
 	var old_position := position()
-	#translate(Util.vector2_to_vector3(move_vector))
 	self.transform.origin += Util.vector2_to_vector3(move_vector)
 	building_range_map.moved(self, old_position, position())
+	
+	# recheck if we reached target point
+	return (target_position - position()).length() < 0.0001
+
+# returns true when done
+func attack_building(delta: float, building: Building) -> bool:
+	if building.is_destroyed():
+		return true
+	
+	if building.target_dist(position()) <= approach_distance:
+		if last_target_signal == LastTargetSignal.TARGET_LOST:
+			emit_signal("target_acquired", building)
+			last_target_signal = LastTargetSignal.TARGET_ACQUIRED
+	else:
+		move_to_point(delta, building.position())
+	
+	return false
+
+# returns true if action complete
+func process_action(delta: float, action: TroopAction) -> bool:
+	if action.type == TroopActionType.MOVE:
+		return move_to_point(delta, action.position)
+	elif action.type == TroopActionType.ATTACK_BUILDING:
+		return attack_building(delta, action.building)
+	else:
+		print('warning: unhandled troop action')
+		return true
+
+func _physics_process(delta: float):
+	if path == null:
+		return
+	
+	if path_index >= path.size():
+		# shouldn't normally happend because currently path always ends with final target
+		_on_current_target_destroyed()
+		return
+	
+	if process_action(delta, path[path_index]):
+		path_index += 1
 
 # returns true if destroyed
 func do_damage(damage: int):
@@ -158,8 +183,8 @@ func do_damage(damage: int):
 
 # stops the unit when the battle time has ended
 func disable():
-	set_target(null)
+	set_path(null, null)
 
 func _on_current_target_destroyed():
-	set_target(null)
+	set_path(null, null)
 	emit_signal("needs_target")

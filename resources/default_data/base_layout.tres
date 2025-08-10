@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="BaseLayout" load_steps=11 format=3 uid="uid://b64kg5ct5cvgr"]
+[gd_resource type="Resource" script_class="BaseLayout" load_steps=20 format=3 uid="uid://b64kg5ct5cvgr"]
 
 [ext_resource type="Script" uid="uid://bh057khaj41u" path="res://resources/base_layout.gd" id="1"]
 [ext_resource type="Script" uid="uid://ba4jrbhod33i4" path="res://resources/building_scene_position.gd" id="1_lucfw"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://bptc87pyvkvbc" path="res://units/buildings/instances/town_hall.tscn" id="3_esrqc"]
 [ext_resource type="PackedScene" uid="uid://b783jvprut7as" path="res://units/buildings/instances/troop_tower.tscn" id="4_62fde"]
 [ext_resource type="PackedScene" uid="uid://cg5fuv4w4cq3u" path="res://units/buildings/instances/gold_mine.tscn" id="5_jklb1"]
+[ext_resource type="PackedScene" uid="uid://dpxrsrfl0vpni" path="res://units/buildings/instances/wall.tscn" id="6_n8e71"]
 
 [sub_resource type="Resource" id="Resource_wjxfj"]
 script = ExtResource("1_lucfw")
@@ -31,6 +32,54 @@ building_scene = ExtResource("5_jklb1")
 position = Vector2i(30, 52)
 metadata/_custom_type_script = "uid://ba4jrbhod33i4"
 
+[sub_resource type="Resource" id="Resource_esrqc"]
+script = ExtResource("1_lucfw")
+building_scene = ExtResource("6_n8e71")
+position = Vector2i(20, 20)
+metadata/_custom_type_script = "uid://ba4jrbhod33i4"
+
+[sub_resource type="Resource" id="Resource_n8e71"]
+script = ExtResource("1_lucfw")
+building_scene = ExtResource("6_n8e71")
+position = Vector2i(21, 20)
+metadata/_custom_type_script = "uid://ba4jrbhod33i4"
+
+[sub_resource type="Resource" id="Resource_62fde"]
+script = ExtResource("1_lucfw")
+building_scene = ExtResource("6_n8e71")
+position = Vector2i(19, 20)
+metadata/_custom_type_script = "uid://ba4jrbhod33i4"
+
+[sub_resource type="Resource" id="Resource_jklb1"]
+script = ExtResource("1_lucfw")
+building_scene = ExtResource("6_n8e71")
+position = Vector2i(22, 20)
+metadata/_custom_type_script = "uid://ba4jrbhod33i4"
+
+[sub_resource type="Resource" id="Resource_vyt3b"]
+script = ExtResource("1_lucfw")
+building_scene = ExtResource("6_n8e71")
+position = Vector2i(23, 20)
+metadata/_custom_type_script = "uid://ba4jrbhod33i4"
+
+[sub_resource type="Resource" id="Resource_ikqih"]
+script = ExtResource("1_lucfw")
+building_scene = ExtResource("6_n8e71")
+position = Vector2i(24, 20)
+metadata/_custom_type_script = "uid://ba4jrbhod33i4"
+
+[sub_resource type="Resource" id="Resource_qup46"]
+script = ExtResource("1_lucfw")
+building_scene = ExtResource("6_n8e71")
+position = Vector2i(25, 20)
+metadata/_custom_type_script = "uid://ba4jrbhod33i4"
+
+[sub_resource type="Resource" id="Resource_6ysax"]
+script = ExtResource("1_lucfw")
+building_scene = ExtResource("6_n8e71")
+position = Vector2i(26, 20)
+metadata/_custom_type_script = "uid://ba4jrbhod33i4"
+
 [resource]
 script = ExtResource("1")
-buildings = Array[ExtResource("1_lucfw")]([SubResource("Resource_wjxfj"), SubResource("Resource_q77pm"), SubResource("Resource_ha68q"), SubResource("Resource_2pb6y")])
+buildings = Array[ExtResource("1_lucfw")]([SubResource("Resource_wjxfj"), SubResource("Resource_q77pm"), SubResource("Resource_ha68q"), SubResource("Resource_2pb6y"), SubResource("Resource_esrqc"), SubResource("Resource_n8e71"), SubResource("Resource_62fde"), SubResource("Resource_jklb1"), SubResource("Resource_vyt3b"), SubResource("Resource_ikqih"), SubResource("Resource_qup46"), SubResource("Resource_6ysax")])

@@ -122,7 +122,7 @@ func move_to_point(delta: float, target_position: Vector2) -> bool:
 	
 	rotate_towards(delta, move_direction)
 	
-	var move_distance := delta * move_speed
+	var move_distance: float = min(delta * move_speed, move_direction.length())
 	
 	var move_vector := move_distance * move_direction.normalized()
 	
@@ -139,6 +139,8 @@ func attack_building(delta: float, building: Building) -> bool:
 		return true
 	
 	if building.target_dist(position()) <= approach_distance:
+		rotate_towards(delta, building.position() - position())
+		
 		if last_target_signal == LastTargetSignal.TARGET_LOST:
 			emit_signal("target_acquired", building)
 			last_target_signal = LastTargetSignal.TARGET_ACQUIRED

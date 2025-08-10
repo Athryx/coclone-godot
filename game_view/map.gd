@@ -324,12 +324,12 @@ var pathing_nodes: Array[PathingNode] = []
 # returns a list of buildings between the line segment from start to end
 # currently just walks the tiles, but a better approach could be
 # a filling in empty tiles with larger regions, so empty squares do not cost as much time to deal with
-func buildings_between(buildings: Array[Building], start: Vector2, end: Vector2, ignore_building: Building) -> Array[Building]:
+func buildings_between(buildings: Array[Building], start: Vector2, end: Vector2, ignore_building1: Building, ignore_building2: Building) -> Array[Building]:
 	var out: Array[Building] = []
 	
 	for building in buildings:
 		# don't include the building we want to ignore
-		if building == ignore_building:
+		if building == ignore_building1 or building == ignore_building2:
 			continue
 		
 		var hitbox := building.hitbox_bounds()
@@ -351,16 +351,15 @@ func connect_pathing_nodes(all_buildings: Array[Building], start_index: int, end
 	
 	# ignore building if both nodes are edge nodes on the same bulding
 	# these nodes should always be connected
-	var ignore_building: Building = null
 	if start_node.building == end_node.building:
-		ignore_building = start_node.building
+		pass
 	else:
 		# for connections between different building nodes, ignore connection if it is
 		# outside of node 270 degree pov (ie. corner node can't go between its own building
 		if not (start_node.can_connect_to(end_node.position) and end_node.can_connect_to(start_node.position)):
 			return
 	
-	var buildings := buildings_between(all_buildings, start_node.position, end_node.position, ignore_building)
+	var buildings := buildings_between(all_buildings, start_node.position, end_node.position, start_node.building, end_node.building)
 	
 	start_node.connections.append(PathingNodeConnection.new(end_index, buildings))
 	end_node.connections.append(PathingNodeConnection.new(start_index, buildings))
@@ -422,7 +421,7 @@ class TroopApproximationPoint:
 		
 		for i in range(map.pathing_nodes.size()):
 			var node: PathingNode = map.pathing_nodes[i]
-			var buildings: Array[Building] = map.buildings_between(all_buildings, position, node.position, null)
+			var buildings: Array[Building] = map.buildings_between(all_buildings, position, node.position, node.building, null)
 			
 			connections.append(PathingNodeConnection.new(i, buildings))
 		
@@ -581,28 +580,26 @@ func find_initial_targets(troop: Troop) -> InitialTargetResult:
 	var closest_building_score := INF
 	var node_to_path_info_map: Dictionary[PathingNode, NodePathInfo] = {}
 	
-	print(approximation_info.closest_point.connections)
 	for connection in approximation_info.closest_point.connections:
 		var pathing_node := pathing_nodes[connection.node_index]
-		print(pathing_node.node_type)
+		
 		# skip targeting building which this unit doesn't target
 		if pathing_node.node_type == PathingNodeType.BUILDING and (not troop.targets_unit(pathing_node.building) or pathing_node.building.is_destroyed()):
-			print(pathing_node.building.name)
-			print(troop.targets_unit(pathing_node.building))
-			print(pathing_node.building.is_destroyed())
-			print('untargetable')
+			continue
+		
+		# prevent going through building to backside node, since building itself
+		# is not in list of intermediate buildings on corner node of the building
+		if not pathing_node.can_connect_to(troop.position()):
 			continue
 		
 		var distance := (troop.position() - pathing_node.position).length()
 		# if we have a building which is has a cost less then what a building at
 		# this distance would have, we can stop looking
 		if troop.pathing_cost(distance, []) >= closest_building_score:
-			print('prune')
 			break
 		
 		var buildings := approximation_info.buildings_to_node(connection.node_index)
 		var cost := troop.pathing_cost(distance, buildings)
-		print(cost)
 		if pathing_node.node_type == PathingNodeType.BUILDING and troop.targets_unit(pathing_node.building) and cost < closest_building_score:
 			closest_building_score = cost
 		
@@ -615,7 +612,6 @@ func find_initial_targets(troop: Troop) -> InitialTargetResult:
 # gets a path to a target for the troop, or null if no more buildings left which troop can target
 func get_target_path(troop: Troop) -> NodePathInfo:
 	var state := find_initial_targets(troop)
-	print(state)
 	var visited_nodes := Set.new()
 	
 	var selected_path: NodePathInfo = null
@@ -655,11 +651,16 @@ func get_target_path(troop: Troop) -> NodePathInfo:
 			var connected_node_path_info = state.node_to_path_info_map.get(connected_node)
 			# update cost in priority queue of node if it is less then previously
 			var old_cost = state.nodes.get_cost(connected_node)
+			var new_path: Array[PathingNodeConnection]
+			new_path.assign(path.connections + [connection])
+			
 			if old_cost == null:
-				connected_node_path_info = NodePathInfo.new(path.connections, connected_node)
+				connected_node_path_info = NodePathInfo.new(new_path, connected_node)
 				state.nodes.insert(connected_node_path_info, cost)
 				state.node_to_path_info_map[connected_node] = connected_node_path_info
 			elif cost < old_cost:
+				# update path and cost
+				connected_node_path_info.connctions = new_path
 				state.nodes.update_cost(connected_node, cost)
 	
 	return selected_path

@@ -16,8 +16,6 @@ enum UnitGroup {
 
 # checks if this unit targets the other unit
 func targets_unit(other: Unit) -> bool:
-	print(other.unit_groups)
-	print(self.targeted_unit_groups)
 	return (other.unit_groups & self.targeted_unit_groups) != 0
 
 @export var aim_pos_height := 0.0

@@ -50,23 +50,23 @@ static func segment_intersects_rect(start: Vector2, end: Vector2, rect: Rect2) -
 	var rect_min := rect.position - start
 	var rect_max := rect_min + rect.size
 	
-	var min_x_intercept := segment_dir.x / rect_min.x
+	var min_x_intercept := rect_min.x / segment_dir.x
 	var min_x_vec := min_x_intercept * segment_dir
 	if min_x_intercept >= 0.0 and min_x_intercept <= 1.0 and min_x_vec.y >= rect_min.y and min_x_vec.y <= rect_max.y:
 		return true
 	
-	var max_x_intercept := segment_dir.x / rect_max.x
+	var max_x_intercept := rect_max.x / segment_dir.x
 	var max_x_vec := max_x_intercept * segment_dir
 	if max_x_intercept >= 0.0 and max_x_intercept <= 1.0 and max_x_vec.y >= rect_min.y and max_x_vec.y <= rect_max.y:
 		return true
 	
-	var min_y_intercept := segment_dir.y / rect_min.y
+	var min_y_intercept := rect_min.y / segment_dir.y
 	var min_y_vec := min_y_intercept * segment_dir
 	if min_y_intercept >= 0.0 and min_y_intercept <= 1.0 and min_y_vec.x >= rect_min.x and min_y_vec.x <= rect_max.x:
 		return true
 	
 	# must check all 4 sides because start or end can be inside rectangle
-	var max_y_intercept := segment_dir.y / rect_max.y
+	var max_y_intercept := rect_max.y /  segment_dir.y
 	var max_y_vec := max_y_intercept * segment_dir
 	if max_y_intercept >= 0.0 and max_y_intercept <= 1.0 and max_y_vec.x >= rect_min.x and max_y_vec.x <= rect_max.x:
 		return true

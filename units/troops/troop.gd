@@ -39,6 +39,10 @@ var building_range_map: BuildingRangeMap
 # something else should then call set target on this troop
 signal needs_target
 
+var path = null
+var path_index := 0
+var final_target: Building = null
+
 var current_target = null
 
 func set_target(building):
@@ -55,6 +59,46 @@ func pathing_cost(distance: float, buildings: Array[Building]) -> float:
 	for building in buildings:
 		cost += building.health / pathing_dps
 	return cost
+
+enum TroopActionType {
+	MOVE = 0,
+	ATTACK_BUILDING = 1,
+}
+
+class TroopAction:
+	extends RefCounted
+	
+	var type: TroopActionType
+	
+	# vector2
+	var position = null
+	var building: Building = null
+	
+	func _init(type: TroopActionType):
+		self.type = type
+	
+	static func move(position: Vector2) -> TroopAction:
+		var out := TroopAction.new(TroopActionType.MOVE)
+		out.position = position
+		return out
+	
+	static func attack_building(building: Building) -> TroopAction:
+		var out := TroopAction.new(TroopActionType.ATTACK_BUILDING)
+		out.building = building
+		return out
+
+func set_path(path, final_target: Building):
+	if path == null and self.path != null:
+		self.path = null
+		self.final_target = null
+		
+		emit_signal("target_lost")
+		last_target_signal = LastTargetSignal.TARGET_LOST
+	elif path != null and final_target != null:
+		self.path = path
+		self.path_index = 0
+		self.final_target = final_target
+		final_target.connect("destroyed", self._on_current_target_destroyed, ConnectFlags.CONNECT_ONE_SHOT)
 
 func tile() -> Vector2i:
 	return Util.position_to_tile_pos(position())

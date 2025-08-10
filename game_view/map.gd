@@ -552,20 +552,43 @@ class InitialTargetResult:
 	extends RefCounted
 	
 	var nodes: BinaryHeap
+	var closest_building_score: float
+	var node_to_path_info_map: Dictionary[PathingNode, NodePathInfo]
+	
+	func _init(nodes: BinaryHeap, closest_building_score: float, node_to_path_info_map: Dictionary[PathingNode, NodePathInfo]):
+		self.nodes = nodes
+		self.closest_building_score = closest_building_score
+		self.node_to_path_info_map = node_to_path_info_map
 
-func find_initial_targets(troop: Troop) -> BinaryHeap:
+# represents a path the troop will take to reach the node
+# this is newtype wrapper so we can change connections without chainging
+# object address, so it still works in priority queue dictionary of indexes
+class NodePathInfo:
+	extends RefCounted
+	
+	var connections: Array[PathingNodeConnection]
+	var dst_node: PathingNode
+	
+	func _init(connections: Array[PathingNodeConnection], dst_node: PathingNode):
+		self.connections = connections
+		self.dst_node = dst_node
+
+func find_initial_targets(troop: Troop) -> InitialTargetResult:
 	var targets := BinaryHeap.new()
 	var approximation_info := get_troop_approximation_info(troop.position())
 	
 	var closest_building_score := INF
+	var node_to_path_info_map := {}
 	
 	for connection in approximation_info.closest_point.connections:
 		var pathing_node := pathing_nodes[connection.node_index]
 		# skip targeting building which this unit doesn't target
-		if pathing_node.node_type == PathingNodeType.BUILDING and not troop.targets_unit(pathing_node.building):
+		if pathing_node.node_type == PathingNodeType.BUILDING and (not troop.targets_unit(pathing_node.building) or pathing_node.building.is_destroyed()):
 			continue
 		
 		var distance := (troop.position() - pathing_node.position).length()
+		# if we have a building which is has a cost less then what a building at
+		# this distance would have, we can stop looking
 		if troop.pathing_cost(distance, []) >= closest_building_score:
 			break
 		
@@ -574,14 +597,65 @@ func find_initial_targets(troop: Troop) -> BinaryHeap:
 		if pathing_node.node_type == PathingNodeType.BUILDING and troop.targets_unit(pathing_node.building) and cost < closest_building_score:
 			closest_building_score = cost
 		
-		targets.insert(pathing_node, cost)
+		var path_info := NodePathInfo.new([connection], pathing_node)
+		node_to_path_info_map[pathing_node] = path_info
+		targets.insert(path_info, cost)
 	
-	return targets
+	return InitialTargetResult.new(targets, closest_building_score, node_to_path_info_map)
+
+# gets a path to a target for the troop, or null if no more buildings left which troop can target
+func get_target_path(troop: Troop) -> NodePathInfo:
+	var state := find_initial_targets(troop)
+	var visited_nodes := Set.new()
+	
+	var selected_path: NodePathInfo = null
+	
+	while true:
+		var start_node_cost = state.nodes.lowest_cost()
+		if start_node_cost == null:
+			break
+		
+		var path: NodePathInfo = state.nodes.extract()
+		var node := path.dst_node
+		if node.node_type == PathingNodeType.BUILDING:
+			# found building to target, this is minimum cost node which is not yet visited
+			# and first minumum cost buiilding we target it
+			selected_path = path
+			break
+		
+		visited_nodes.add(node)
+		
+		for connection in node.connections:
+			var connected_node := pathing_nodes[connection.node_index]
+			if visited_nodes.contains(connected_node):
+				continue
+			
+			# skip targeting building which this unit doesn't target
+			if connected_node.node_type == PathingNodeType.BUILDING and (not troop.targets_unit(connected_node.building) or connected_node.building.is_destroyed()):
+				continue
+			
+			var distance := (node.position - connected_node.position).length()
+			if troop.pathing_cost(distance, []) + start_node_cost > state.closest_building_score:
+				break
+			
+			var cost: float = troop.pathing_cost(distance, connection.intermediate_buildings) + start_node_cost
+			if connected_node.node_type == PathingNodeType.BUILDING and troop.targets_unit(connected_node.building):
+				state.closest_building_score = cost
+			
+			var connected_node_path_info = state.node_to_path_info_map.get(connected_node)
+			# update cost in priority queue of node if it is less then previously
+			var old_cost = state.nodes.get_cost(connected_node)
+			if old_cost == null:
+				connected_node_path_info = NodePathInfo.new(path.connections, connected_node)
+				state.nodes.insert(connected_node_path_info, cost)
+				state.node_to_path_info_map[connected_node] = connected_node_path_info
+			elif cost < old_cost:
+				state.nodes.update_cost(connected_node, cost)
+	
+	return selected_path
 
 func set_target(troop: Troop):
-	var next_nodes := find_initial_targets(troop)
-	
-	pass
+	var path := get_target_path(troop)
 
 func _on_needs_target(troop):
 	if disabled:

@@ -23,39 +23,6 @@ class TileBuildingDist:
 
 const TileBounds = preload("res://util/tile_bounds.gd")
 
-# a 3d array, with the first 2 dimensions being for each tile
-# the 3rd dimension is an array of TileBuildingDists, which say how far the buulding is from the center of that tile
-# this is used for determining what buildings a unit will target
-var building_dist_map := []
-
-func generate_building_dist_map():
-	var buildings := get_buildings()
-	
-	for x in map_size:
-		var building_dist_row := []
-		
-		for y in map_size:
-			var current_tile_array := []
-			
-			var tile_pos := Vector2(x as float + 0.5, y as float + 0.5)
-			
-			for building in buildings:
-				var tile_building_dist := TileBuildingDist.new(
-					building.target_dist(tile_pos),
-					building
-				)
-				
-				var index: int = current_tile_array.bsearch_custom(
-					tile_building_dist,
-					tile_building_dist.compare
-				)
-				
-				current_tile_array.insert(index, tile_building_dist)
-			
-			building_dist_row.push_back(current_tile_array)
-		
-		building_dist_map.push_back(building_dist_row)
-
 var building_range_map: BuildingRangeMap
 
 # a 2d array of numbers for each tile
@@ -123,7 +90,6 @@ func _ready():
 
 # call this when all buildings have been added to the map to set it up for attack
 func finalize():
-	generate_building_dist_map()
 	building_range_map = BuildingRangeMap.new(get_tree().get_nodes_in_group("building_range"))
 	generate_spawn_pos_mesh()
 	

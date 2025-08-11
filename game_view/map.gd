@@ -638,6 +638,16 @@ class NodePathInfo:
 		self.connections = connections
 		self.dst_node = dst_node
 
+func sorted_intersected_buildings(buildings: Array[Building], start: Vector2, direction: Vector2) -> Array[Building]:
+	# binary search could be faster asymtopically, but in most cases 1 or 2 buildings
+	# at the end won't be targeted, since approach distance smaller than actual distance most times,
+	# so linear scan from back probabls faster
+	for i in range(buildings.size() - 1, -1, -1):
+		if Util.segment_intersects_rect(start, start + direction, buildings[i].hitbox_bounds()):
+			return buildings.slice(0, i + 1)
+	
+	return []
+
 func find_initial_targets(troop: Troop) -> InitialTargetResult:
 	var targets := BinaryHeap.new()
 	var approximation_info := get_troop_approximation_info(troop.position())
@@ -661,7 +671,26 @@ func find_initial_targets(troop: Troop) -> InitialTargetResult:
 		if not pathing_node.can_connect_to(troop.position()):
 			continue
 		
-		var distance := (troop.position() - pathing_node.position).length()
+		var connection_vector := pathing_node.position - troop.position()
+		# if we are targeting a building, we don't need to approach all the way
+		# so make the vector shorter by the approach distance
+		if pathing_node.node_type == PathingNodeType.BUILDING:
+			var vector_len := connection_vector.length()
+			var targetbox_dist := vector_len - pathing_node.building.target_dist(troop.position())
+			var distance_reduction := targetbox_dist + troop.approach_distance
+			
+			if vector_len <= distance_reduction + 0.0001:
+				print('shrnik')
+				# negative vector will mess things up so just make vector close to 0
+				connection_vector *= 0.0001
+			else:
+				print(connection_vector)
+				print((vector_len - distance_reduction) / vector_len)
+				connection_vector *= (vector_len - distance_reduction) / vector_len
+				print(connection_vector.length())
+		
+		var distance := connection_vector.length()
+		
 		# if we have a building which is has a cost less then what a building at
 		# this distance would have, we can stop looking
 		if troop.pathing_cost(distance, []) >= closest_building_score:
@@ -677,7 +706,12 @@ func find_initial_targets(troop: Troop) -> InitialTargetResult:
 			return dist1 < dist2
 		buildings.sort_custom(sort_fn)
 		
-		var cost := troop.pathing_cost(distance, buildings)
+		var cost_buildings := buildings
+		# exclude buildings which we can shoot over
+		if pathing_node.node_type == PathingNodeType.BUILDING:
+			cost_buildings = sorted_intersected_buildings(cost_buildings, troop.position(), connection_vector)
+		
+		var cost := troop.pathing_cost(distance, cost_buildings)
 		if pathing_node.node_type == PathingNodeType.BUILDING and troop.targets_unit(pathing_node.building) and cost < closest_building_score:
 			closest_building_score = cost
 		
@@ -724,11 +758,35 @@ func get_target_path(troop: Troop) -> NodePathInfo:
 			if connected_node.node_type == PathingNodeType.BUILDING and not troop.targets_unit(connected_node.building):
 				continue
 			
-			var distance := (node.position - connected_node.position).length()
+			var connection_vector := connected_node.position - node.position
+			# if we are targeting a building, we don't need to approach all the way
+			# so make the vector shorter by the approach distance
+			if connected_node.node_type == PathingNodeType.BUILDING:
+				var vector_len := connection_vector.length()
+				var targetbox_dist := vector_len - connected_node.building.target_dist(troop.position())
+				var distance_reduction := targetbox_dist + troop.approach_distance
+				
+				if vector_len <= distance_reduction + 0.0001:
+					# negative vector will mess things up so just make vector close to 0
+					print('shrink')
+					connection_vector *= 0.0001
+				else:
+					print(connection_vector)
+					print((vector_len - distance_reduction) / vector_len)
+					connection_vector *= (vector_len - distance_reduction) / vector_len
+					print(connection_vector.length())
+			
+			var distance := connection_vector.length()
+			
 			if troop.pathing_cost(distance, []) + start_node_cost > state.closest_building_score:
 				break
 			
-			var cost: float = troop.pathing_cost(distance, connection.intermediate_buildings) + start_node_cost
+			var cost_buildings := connection.intermediate_buildings
+			# exclude buildings which we can shoot over
+			if connected_node.node_type == PathingNodeType.BUILDING:
+				cost_buildings = sorted_intersected_buildings(cost_buildings, node.position, connection_vector)
+			
+			var cost: float = troop.pathing_cost(distance, cost_buildings) + start_node_cost
 			if connected_node.node_type == PathingNodeType.BUILDING and troop.targets_unit(connected_node.building):
 				state.closest_building_score = cost
 			
@@ -759,15 +817,40 @@ func set_troop_path(troop: Troop):
 	
 	# convert path to troop actions
 	var troop_actions := []
+	var old_position := troop.position()
+	
 	for connection in path.connections:
-		for building in connection.intermediate_buildings:
+		var node := pathing_nodes[connection.node_index]
+		var connection_vector := node.position - old_position
+		
+		var buildings := connection.intermediate_buildings
+		
+		if node.node_type == PathingNodeType.BUILDING:
+			var vector_len := connection_vector.length()
+			var targetbox_dist := vector_len - node.building.target_dist(troop.position())
+			var distance_reduction := targetbox_dist + troop.approach_distance
+			
+			if vector_len <= distance_reduction + 0.0001:
+				# negative vector will mess things up so just make vector close to 0
+				print('shrink')
+				connection_vector *= 0.0001
+			else:
+				print(connection_vector)
+				print((vector_len - distance_reduction) / vector_len)
+				connection_vector *= (vector_len - distance_reduction) / vector_len
+				print(connection_vector.length())
+			
+			buildings = sorted_intersected_buildings(buildings, old_position, connection_vector)
+		
+		for building in buildings:
 			troop_actions.append(Troop.TroopAction.attack_building(building))
 		
-		var node := pathing_nodes[connection.node_index]
 		if node.node_type == PathingNodeType.BUILDING:
 			troop_actions.append(Troop.TroopAction.attack_building(node.building))
 		else:
 			troop_actions.append(Troop.TroopAction.move(node.position))
+		
+		old_position = node.position
 	
 	troop.set_path(troop_actions, final_target)
 

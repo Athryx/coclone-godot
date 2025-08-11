@@ -21,6 +21,7 @@ metadata/_custom_type_script = "uid://dee0g7wvlngib"
 
 [node name="LightPlatform" type="Node3D" node_paths=PackedStringArray("health_bar") groups=["buildings"]]
 script = ExtResource("1")
+spawn_box_width = 2
 alive_model_node = NodePath("AliveMesh")
 destroyed_model_node = NodePath("DestroyedMesh")
 unit_name = "Light Platform"

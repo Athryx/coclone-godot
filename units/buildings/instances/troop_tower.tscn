@@ -13,6 +13,7 @@ hitbox_size = 4.0
 damagebox_size = 4.0
 alive_model_node = NodePath("LevelModel")
 destroyed_model_node = NodePath("broken_building_4x4")
+unit_name = "Troop Tower"
 unit_groups = 3
 aim_pos_height = 3.0
 preview_size = 7.5

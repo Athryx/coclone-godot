@@ -136,6 +136,10 @@ func move_to_point(delta: float, target_position: Vector2) -> bool:
 # returns true when done
 func attack_building(delta: float, building: Building) -> bool:
 	if building.is_destroyed():
+		if last_target_signal == LastTargetSignal.TARGET_ACQUIRED:
+			emit_signal("target_lost")
+			last_target_signal = LastTargetSignal.TARGET_LOST
+		
 		return true
 	
 	if building.target_dist(position()) <= approach_distance:
@@ -176,7 +180,7 @@ func do_damage(damage: int):
 	# don't emit the destroyed signal multiple times if it is already destroyed
 	if health == 0:
 		return
-		
+	
 	super.do_damage(damage)
 	
 	if health == 0:

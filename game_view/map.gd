@@ -131,6 +131,7 @@ func finalize():
 		building.connect("spawn_projectile", Callable(self, "_on_spawn_projectile"))
 	
 	generate_pathing_nodes()
+	#debug_show_pathing_nodes()
 
 func add_building(building: Building) -> bool:
 	var footprint_bounds := building.footprint_bounds()
@@ -345,7 +346,7 @@ func buildings_between(buildings: Array[Building], start: Vector2, end: Vector2,
 	
 	return out
 
-func connect_pathing_nodes(all_buildings: Array[Building], start_index: int, end_index: int):
+func connect_pathing_nodes(all_buildings: Array[Building], start_index: int, end_index: int, one_way: bool = false):
 	var start_node := pathing_nodes[start_index]
 	var end_node := pathing_nodes[end_index]
 	
@@ -362,7 +363,8 @@ func connect_pathing_nodes(all_buildings: Array[Building], start_index: int, end
 	var buildings := buildings_between(all_buildings, start_node.position, end_node.position, start_node.building, end_node.building)
 	
 	start_node.connections.append(PathingNodeConnection.new(end_index, buildings))
-	end_node.connections.append(PathingNodeConnection.new(start_index, buildings))
+	if not one_way:
+		end_node.connections.append(PathingNodeConnection.new(start_index, buildings))
 
 func generate_pathing_nodes():
 	pathing_nodes = []
@@ -390,16 +392,79 @@ func generate_pathing_nodes():
 			var other_building: Building = buildings[i]
 			var other_base_index := 5 * i
 			
-			for src_node_type in range(1, 5):
-				for target_node_type in range(5):
-					# TODO: don't connect nodes which are on a corner of a building directly facing src node
-					# these nodes would never be pathed to as part of the real shortest path
-					# TODO: don't connect nodes if the path passes over another corner node
-					
-					connect_pathing_nodes(buildings, base_index + src_node_type, other_base_index + target_node_type)
+			for target_node_type in range(5):
+				# TODO: don't connect nodes which are on a corner of a building directly facing src node
+				# these nodes would never be pathed to as part of the real shortest path
+				# TODO: don't connect nodes if the path passes over another corner node
+				
+				for src_node_type in range(1, 5):
+					connect_pathing_nodes(buildings, base_index + src_node_type, other_base_index + target_node_type, true)
+				
+				# connect previous corner nodes to building node
+				if target_node_type != PathingNodeType.BUILDING:
+					connect_pathing_nodes(buildings, other_base_index + target_node_type, base_index + PathingNodeType.BUILDING, true)
 	
 	for node in pathing_nodes:
 		PathingNodeConnection.sort_connections(node.position, self, node.connections)
+
+func create_line_mesh_2d(start_2d: Vector2, end_2d: Vector2, thickness: float = 0.05):
+	# Convert Vector2 -> Vector3 (on the XZ plane, y = 0)
+	var start = Vector3(start_2d.x, 0.1, start_2d.y)
+	var end = Vector3(end_2d.x, 0.1, end_2d.y)
+
+	var mesh_instance = MeshInstance3D.new()
+	
+	# Create cylinder mesh for the line
+	var cylinder = CylinderMesh.new()
+	cylinder.top_radius = thickness
+	cylinder.bottom_radius = thickness
+	cylinder.height = start.distance_to(end)
+	cylinder.radial_segments = 8
+	mesh_instance.mesh = cylinder
+
+	# Midpoint position
+	var midpoint = (start + end) * 0.5
+	mesh_instance.translate(midpoint)
+
+	# Rotate cylinder so its local Z-axis points toward the end
+	var direction = (end_2d - start_2d).normalized()
+	var forward_vec := Vector2(mesh_instance.basis.z.x, mesh_instance.basis.z.z)
+	var angle := forward_vec.angle_to(direction)
+	mesh_instance.rotate_x(deg_to_rad(90))
+	mesh_instance.rotate_y(-angle)
+	#var new_basis = Basis()
+	#new_basis.z = direction
+	#new_basis.x = Vector3.UP.cross(direction).normalized()
+	#new_basis.y = direction.cross(basis.x).normalized()
+	#mesh_instance.basis = new_basis
+
+	add_child(mesh_instance)
+
+func create_sphere_at_2d(point_2d: Vector2, radius: float = 0.25):
+	# Convert Vector2 -> Vector3 (XZ plane, y = 0)
+	var position_3d = Vector3(point_2d.x, 0, point_2d.y)
+
+	var mesh_instance = MeshInstance3D.new()
+
+	# Create sphere mesh
+	var sphere = SphereMesh.new()
+	sphere.radius = radius
+	#sphere.height_segments = 8
+	sphere.radial_segments = 16
+	mesh_instance.mesh = sphere
+
+	# Place sphere at given point
+	mesh_instance.translate(position_3d)
+
+	add_child(mesh_instance)
+
+func debug_show_pathing_nodes():
+	create_line_mesh_2d(Vector2(0, 0), Vector2(10, 10))
+	for src_node in pathing_nodes:
+		create_sphere_at_2d(src_node.position)
+		for connection in src_node.connections:
+			var dst_node := pathing_nodes[connection.node_index]
+			create_line_mesh_2d(src_node.position, dst_node.position)
 
 # keeps track of all pathing nodes that can be moved to from a point close to this pint
 # there is a grid of troop approximation points, which are lazily crated when needed by troop close by
@@ -583,8 +648,12 @@ func find_initial_targets(troop: Troop) -> InitialTargetResult:
 	for connection in approximation_info.closest_point.connections:
 		var pathing_node := pathing_nodes[connection.node_index]
 		
+		# if building is destroyed, none of the pathing nodes related to the buildings are relevant anymore
+		if pathing_node.building.is_destroyed():
+			continue
+		
 		# skip targeting building which this unit doesn't target
-		if pathing_node.node_type == PathingNodeType.BUILDING and (not troop.targets_unit(pathing_node.building) or pathing_node.building.is_destroyed()):
+		if pathing_node.node_type == PathingNodeType.BUILDING and not troop.targets_unit(pathing_node.building):
 			continue
 		
 		# prevent going through building to backside node, since building itself
@@ -599,11 +668,22 @@ func find_initial_targets(troop: Troop) -> InitialTargetResult:
 			break
 		
 		var buildings := approximation_info.buildings_to_node(connection.node_index)
+		
+		# sort buildings by distance to troop, since approximation info does not return buildings in order
+		var sort_fn = func (building1, building2):
+			var dist1: float = (troop.position() - building1.position()).length_squared()
+			var dist2: float = (troop.position() - building2.position()).length_squared()
+			
+			return dist1 < dist2
+		buildings.sort_custom(sort_fn)
+		
 		var cost := troop.pathing_cost(distance, buildings)
 		if pathing_node.node_type == PathingNodeType.BUILDING and troop.targets_unit(pathing_node.building) and cost < closest_building_score:
 			closest_building_score = cost
 		
-		var path_info := NodePathInfo.new([connection], pathing_node)
+		var interpolated_connection := PathingNodeConnection.new(connection.node_index, buildings)
+		
+		var path_info := NodePathInfo.new([interpolated_connection], pathing_node)
 		node_to_path_info_map[pathing_node] = path_info
 		targets.insert(path_info, cost)
 	
@@ -636,8 +716,12 @@ func get_target_path(troop: Troop) -> NodePathInfo:
 			if visited_nodes.contains(connected_node):
 				continue
 			
+			# if building is destroyed, none of the pathing nodes related to the buildings are relevant anymore
+			if connected_node.building.is_destroyed():
+				continue
+			
 			# skip targeting building which this unit doesn't target
-			if connected_node.node_type == PathingNodeType.BUILDING and (not troop.targets_unit(connected_node.building) or connected_node.building.is_destroyed()):
+			if connected_node.node_type == PathingNodeType.BUILDING and not troop.targets_unit(connected_node.building):
 				continue
 			
 			var distance := (node.position - connected_node.position).length()
@@ -650,7 +734,7 @@ func get_target_path(troop: Troop) -> NodePathInfo:
 			
 			var connected_node_path_info = state.node_to_path_info_map.get(connected_node)
 			# update cost in priority queue of node if it is less then previously
-			var old_cost = state.nodes.get_cost(connected_node)
+			var old_cost = state.nodes.get_cost(connected_node_path_info)
 			var new_path: Array[PathingNodeConnection]
 			new_path.assign(path.connections + [connection])
 			
@@ -660,8 +744,8 @@ func get_target_path(troop: Troop) -> NodePathInfo:
 				state.node_to_path_info_map[connected_node] = connected_node_path_info
 			elif cost < old_cost:
 				# update path and cost
-				connected_node_path_info.connctions = new_path
-				state.nodes.update_cost(connected_node, cost)
+				connected_node_path_info.connections = new_path
+				state.nodes.update_cost(connected_node_path_info, cost)
 	
 	return selected_path
 

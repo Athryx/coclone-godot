@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://da3n20opnex88"]
+[gd_scene load_steps=11 format=3 uid="uid://da3n20opnex88"]
 
 [ext_resource type="PackedScene" uid="uid://caje2nu7nyj7e" path="res://units/troops/instances/gunner.tscn" id="1"]
 [ext_resource type="PackedScene" uid="uid://cun4cy2nkmc4i" path="res://units/buildings/instances/light_platform.tscn" id="2"]
@@ -8,13 +8,14 @@
 [ext_resource type="PackedScene" uid="uid://cg5fuv4w4cq3u" path="res://units/buildings/instances/gold_mine.tscn" id="5_20i3q"]
 [ext_resource type="PackedScene" uid="uid://bptc87pyvkvbc" path="res://units/buildings/instances/town_hall.tscn" id="6_slpak"]
 [ext_resource type="PackedScene" uid="uid://b783jvprut7as" path="res://units/buildings/instances/troop_tower.tscn" id="7_hengr"]
+[ext_resource type="PackedScene" uid="uid://dpxrsrfl0vpni" path="res://units/buildings/instances/wall.tscn" id="8_slpak"]
 
 [sub_resource type="World3D" id="World3D_rjosu"]
 environment = ExtResource("4")
 
 [node name="ScenePreviewGenerator" type="Node"]
 script = ExtResource("3")
-preview_scenes = Array[PackedScene]([ExtResource("1"), ExtResource("2"), ExtResource("4_k8rl3"), ExtResource("5_20i3q"), ExtResource("6_slpak"), ExtResource("7_hengr")])
+preview_scenes = Array[PackedScene]([ExtResource("1"), ExtResource("2"), ExtResource("4_k8rl3"), ExtResource("5_20i3q"), ExtResource("6_slpak"), ExtResource("7_hengr"), ExtResource("8_slpak")])
 
 [node name="SubViewport" type="SubViewport" parent="."]
 own_world_3d = true

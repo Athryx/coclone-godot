@@ -1,7 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://dpxrsrfl0vpni"]
+[gd_scene load_steps=5 format=3 uid="uid://dpxrsrfl0vpni"]
 
 [ext_resource type="Script" uid="uid://b8ux2rx04oois" path="res://units/buildings/building.gd" id="1_oyxp2"]
 [ext_resource type="Script" uid="uid://d0ascrhuurr2b" path="res://units/health_bar.gd" id="2_cgon8"]
+[ext_resource type="Script" uid="uid://cvyvotbd7bt0p" path="res://units/level_model.gd" id="3_b6fjc"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_cgon8"]
 
@@ -12,7 +13,8 @@ spawn_box_width = 2
 hitbox_size = 1.001
 damagebox_size = 1.0
 percent_contributor = false
-alive_model_node = NodePath("AliveModel")
+model_merges = true
+alive_model_node = NodePath("LevelModel")
 destroyed_model_node = NodePath("DeadModel")
 unit_name = "Wall"
 unit_groups = 4
@@ -23,7 +25,7 @@ metadata/_custom_type_script = "uid://b8ux2rx04oois"
 [node name="DeadModel" type="MeshInstance3D" parent="."]
 transform = Transform3D(0.8, 0, 0, 0, 0.1, 0, 0, 0, 0.8, 0, 0, 0)
 mesh = SubResource("BoxMesh_cgon8")
-skeleton = NodePath("../AliveModel")
+skeleton = NodePath("")
 
 [node name="HealthBar" type="Sprite3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
@@ -31,5 +33,7 @@ script = ExtResource("2_cgon8")
 width = 100
 metadata/_custom_type_script = "uid://d0ascrhuurr2b"
 
-[node name="AliveModel" type="MeshInstance3D" parent="."]
-mesh = SubResource("BoxMesh_cgon8")
+[node name="LevelModel" type="Node3D" parent="."]
+script = ExtResource("3_b6fjc")
+models_folder = "res://assets/buildings/wall"
+metadata/_custom_type_script = "uid://cvyvotbd7bt0p"

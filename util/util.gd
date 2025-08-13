@@ -74,3 +74,41 @@ static func segment_intersects_rect(start: Vector2, end: Vector2, rect: Rect2) -
 	# check if both points are inside rectangle, which can be checked if just start is inside rectangle
 	# otherwise no intersection
 	return rect.has_point(start)
+
+enum SideDirection {
+	NEG_X = 0,
+	POS_X = 1,
+	NEG_Y = 2,
+	POS_Y = 3,
+}
+
+# sides in rotation order
+const ALL_SIDE_DIRECTIONS := [SideDirection.NEG_X, SideDirection.NEG_Y, SideDirection.POS_X, SideDirection.POS_Y]
+
+static func opposite_side(side: SideDirection) -> SideDirection:
+	match side:
+		SideDirection.NEG_X:
+			return SideDirection.POS_X
+		SideDirection.POS_X:
+			return SideDirection.NEG_X
+		SideDirection.NEG_Y:
+			return SideDirection.POS_Y
+		SideDirection.POS_Y:
+			return SideDirection.NEG_Y
+	
+	# unreachable
+	return SideDirection.NEG_X
+
+static func side_direction_to_vector2i(side: SideDirection) -> Vector2i:
+	match side:
+		SideDirection.NEG_X:
+			return Vector2i(-1, 0)
+		SideDirection.POS_X:
+			return Vector2i(1, 0)
+		SideDirection.NEG_Y:
+			return Vector2i(0, -1)
+		SideDirection.POS_Y:
+			return Vector2i(0, 1)
+	
+	# shouldn't be possible
+	return Vector2i(0, 0)

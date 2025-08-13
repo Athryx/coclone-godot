@@ -1,12 +1,12 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=2 format=3 uid="uid://cpp1kh8vqo6gf"]
 
 [ext_resource type="Script" uid="uid://bgdmortn8w6rr" path="res://game_view/camera_rig.gd" id="1"]
 
 [node name="CameraRig" type="Node3D"]
-script = ExtResource( 1 )
+script = ExtResource("1")
 min_zoom = 10.0
 
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D( 1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 43, 43 )
+transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 43, 43)
 projection = 1
 size = 40.0

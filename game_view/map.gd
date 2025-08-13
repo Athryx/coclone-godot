@@ -86,7 +86,7 @@ func _ready():
 		footprint_map.push_back([])
 		for y in map_size:
 			spawn_pos_map[x].push_back(0)
-			footprint_map[x].push_back(false)
+			footprint_map[x].push_back(null)
 
 # call this when all buildings have been added to the map to set it up for attack
 func finalize():
@@ -113,9 +113,20 @@ func add_building(building: Building) -> bool:
 	
 	for x in footprint_bounds.xrange():
 		for y in footprint_bounds.yrange():
-			footprint_map[x][y] = true
+			footprint_map[x][y] = building
 	
 	add_child(building)
+	
+	# merging faces adjusts model, so do after adding child
+	if building.model_merges:
+		for side in Util.ALL_SIDE_DIRECTIONS:
+			var other_position := building.corner_position + building.footprint_size * Util.side_direction_to_vector2i(side)
+			var other_building := get_building_with_corner_at(other_position)
+			
+			var is_connected := other_building != null and other_building.unit_name == building.unit_name
+			if other_building != null:
+				other_building.set_connected(Util.opposite_side(side), is_connected)
+			building.set_connected(side, is_connected)
 	
 	return true
 
@@ -149,10 +160,23 @@ func is_valid_footprint_tile_bounds(tile_bounds: TileBounds) -> bool:
 	
 	for x in tile_bounds.xrange():
 		for y in tile_bounds.yrange():
-			if footprint_map[x][y]:
+			if footprint_map[x][y] != null:
 				return false
 	
 	return true
+
+func get_building_at(tile: Vector2i) -> Building:
+	if is_valid_tile_pos(tile):
+		return footprint_map[tile.x][tile.y]
+	else:
+		return null
+
+func get_building_with_corner_at(tile: Vector2i) -> Building:
+	var building := get_building_at(tile)
+	if building == null or building.corner_position != tile:
+		return null
+	else:
+		return building
 
 func clamp_tile_bounds(tile_bounds: TileBounds):
 	tile_bounds.min_corner = tile_bounds.min_corner.max(Vector2i(0, 0))

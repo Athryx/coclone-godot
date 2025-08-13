@@ -21,6 +21,9 @@ class_name Building
 # Weather or not the building contributes to the percent destruction
 @export var percent_contributor := true
 
+# If the model merges with adjacent buildings
+@export var model_merges := false
+
 # position of the building on the map
 @export var x_position := 0: set = set_x_position
 @export var y_position := 0: set = set_y_position
@@ -50,6 +53,71 @@ func set_corner_position(tile: Vector2i):
 	var y := corner_position.y as float + half_footprint
 	global_transform.origin.x = x
 	global_transform.origin.z = y
+
+# for buildings with models that merge
+var connected_edges: Array[bool] = [false, false, false, false]
+func set_connected(edge: Util.SideDirection, connected: bool):
+	if not model_merges:
+		return
+	
+	var old_status := connected_edges[edge]
+	if old_status == connected:
+		return
+	
+	connected_edges[edge] = connected
+	
+	# find needed rotation and model to select
+	var connect_count := 0
+	var first_connect = null
+	var second_connect = null
+	var first_empty = null
+	for side in Util.ALL_SIDE_DIRECTIONS:
+		if connected_edges[side]:
+			connect_count += 1
+			if connect_count == 1:
+				first_connect = side
+			elif connect_count == 2:
+				second_connect = side
+		elif first_empty == null:
+			first_empty = side
+	
+	var connection_type := LevelModel.NO_CONNECTION
+	var forward_vec := Vector2(0, 1)
+	var side_vec := Vector2(1, 0)
+	if first_connect != null:
+		forward_vec = Vector2(Util.side_direction_to_vector2i(first_connect))
+	if second_connect != null:
+		side_vec = Vector2(Util.side_direction_to_vector2i(second_connect))
+	
+	var flip := false
+	
+	match connect_count:
+		1:
+			connection_type = LevelModel.CONNECTION1
+		2:
+			if Util.opposite_side(first_connect) == second_connect:
+				connection_type = LevelModel.CONNECTION2_STRAIGHT
+			else:
+				if forward_vec.cross(side_vec) > 0.0:
+					forward_vec = forward_vec.rotated(PI / 2)
+				
+				connection_type = LevelModel.CONNECTION2_CORNER
+		3:
+			forward_vec = Vector2(Util.side_direction_to_vector2i(first_empty))
+			forward_vec = forward_vec.rotated(-PI / 2)
+			connection_type = LevelModel.CONNECTION3
+		4:
+			connection_type = LevelModel.CONNECTION4
+	
+	alive_model.connection = connection_type
+	alive_model.load_model()
+	
+	forward_vec = forward_vec.rotated(PI / 2)
+	var direction := Vector3(forward_vec.x, 0.0, forward_vec.y).normalized()
+	alive_model.basis = Basis()
+	alive_model.look_at(alive_model.global_transform.origin + direction)
+	if flip:
+		alive_model.scale_object_local(Vector3(1.0, 1.0, -1.0))
 
 func _ready():
 	var half_footprint := footprint_size as float / 2.0

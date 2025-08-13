@@ -10,5 +10,5 @@
 
 [resource]
 script = ExtResource("1")
-buildings = Array[PackedScene]([ExtResource("2"), ExtResource("2"), ExtResource("3_wumer"), ExtResource("4_1s7lj"), ExtResource("5_hypvq"), ExtResource("4_1s7lj"), ExtResource("6_1s7lj"), ExtResource("6_1s7lj"), ExtResource("6_1s7lj")])
+buildings = Array[PackedScene]([ExtResource("2"), ExtResource("2"), ExtResource("3_wumer"), ExtResource("4_1s7lj"), ExtResource("5_hypvq"), ExtResource("4_1s7lj"), ExtResource("6_1s7lj"), ExtResource("6_1s7lj"), ExtResource("6_1s7lj"), ExtResource("6_1s7lj"), ExtResource("6_1s7lj"), ExtResource("6_1s7lj"), ExtResource("6_1s7lj"), ExtResource("6_1s7lj"), ExtResource("6_1s7lj"), ExtResource("6_1s7lj")])
 base_layout = ExtResource("1_sc8i1")

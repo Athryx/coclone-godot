@@ -51,3 +51,22 @@ func do_damage(damage: int):
 # used to propagate spawn projectile from chile nodes within the scene
 func emit_spawn_projectile(projectile):
 	emit_signal("spawn_projectile", projectile)
+
+static var unit_scene_map = null
+
+static func load_unit_scene_map():
+	unit_scene_map = {
+		"Gold Mine": load("res://units/buildings/instances/gold_mine.tscn"),
+		"Light Platform": load("res://units/buildings/instances/light_platform.tscn"),
+		"Town Hall": load("res://units/buildings/instances/town_hall.tscn"),
+		"Troop Tower": load("res://units/buildings/instances/troop_tower.tscn"),
+		"Wall": load("res://units/buildings/instances/wall.tscn"),
+		"Gunner": load("res://units/troops/instances/gunner.tscn"),
+		"Knight": load("res://units/troops/instances/knight.tscn"),
+	}
+
+func get_unit_scene():
+	if unit_scene_map == null:
+		load_unit_scene_map()
+	
+	return unit_scene_map[unit_name]

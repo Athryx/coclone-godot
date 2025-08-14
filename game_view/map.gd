@@ -130,6 +130,34 @@ func add_building(building: Building) -> bool:
 	
 	return true
 
+func remove_building(building: Building):
+	assert(building.get_parent() == self)
+	
+	var footprint_bounds := building.footprint_bounds()
+	for x in footprint_bounds.xrange():
+		for y in footprint_bounds.yrange():
+			footprint_map[x][y] = null
+	
+	var spawn_bounds := building.spawn_box_bounds()
+	if spawn_bounds != null:
+		clamp_tile_bounds(spawn_bounds)
+		for x in spawn_bounds.xrange():
+			for y in spawn_bounds.yrange():
+				spawn_pos_map[x][y] -= 1
+	
+	if building.model_merges:
+		for side in Util.ALL_SIDE_DIRECTIONS:
+			var other_position := building.corner_position + building.footprint_size * Util.side_direction_to_vector2i(side)
+			var other_building := get_building_with_corner_at(other_position)
+			
+			if other_building != null and other_building.unit_name == building.unit_name:
+				other_building.set_connected(Util.opposite_side(side), false)
+	
+	remove_child(building)
+
+func move_building(building: Building, new_position: Vector2i):
+	pass
+
 func get_buildings() -> Array[Building]:
 	var buildings: Array[Building]
 	buildings.assign(get_tree().get_nodes_in_group("buildings"))

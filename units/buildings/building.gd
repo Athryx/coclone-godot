@@ -147,7 +147,7 @@ func hitbox_bounds() -> Rect2:
 
 # returns tile bounds which show the min and max corner of the spawn box,
 # otherwise returns null if the building doesn't have a spawn box
-func spawn_box_bounds():
+func spawn_box_bounds() -> TileBounds:
 	if spawn_box_width < 0:
 		return null
 	
@@ -180,3 +180,6 @@ func do_damage(damage: int):
 		emit_signal("destroyed")
 		alive_model.visible = false
 		destroyed_model.visible = true
+
+func get_buttons() -> Array[BuildingButtonDescription]:
+	return []

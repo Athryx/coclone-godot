@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://qnj5rdt6fkv6"]
+
+[ext_resource type="Script" uid="uid://coj8j1wk1luad" path="res://ui/building_ui/building_button_bar.gd" id="1_riqw2"]
+
+[node name="BuildingButtonBar" type="HBoxContainer"]
+custom_minimum_size = Vector2(0, 100)
+theme_override_constants/separation = 10
+script = ExtResource("1_riqw2")
+metadata/_custom_type_script = "uid://coj8j1wk1luad"

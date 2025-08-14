@@ -61,11 +61,17 @@ func get_current_unit():
 	else:
 		return unit.instantiate()
 
-func dec_current_unit():
+func dec_current_unit(remove_if_empty: bool = false):
 	if current_unit != null:
 		current_unit.count -= 1
-		current_unit.icon.set_text(str(current_unit.count))
+		if current_unit.count == 0 and remove_if_empty:
+			current_unit.icon.queue_free()
+			units.erase(current_unit.unit.resource_path)
+			current_unit = null
+		else:
+			current_unit.icon.set_text(str(current_unit.count))
 
 func deselect_unit():
-	current_unit.icon.release_button_focus()
-	current_unit = null
+	if current_unit != null:
+		current_unit.icon.release_button_focus()
+		current_unit = null

@@ -1,9 +1,10 @@
-[gd_scene load_steps=6 format=3 uid="uid://boseqmxbwtogy"]
+[gd_scene load_steps=7 format=3 uid="uid://boseqmxbwtogy"]
 
 [ext_resource type="PackedScene" uid="uid://brceldhrfa7ts" path="res://game_view/game_area.tscn" id="1"]
 [ext_resource type="Script" uid="uid://djokh2opxsbh3" path="res://game_view/base_editor/base_editor.gd" id="2"]
 [ext_resource type="PackedScene" uid="uid://b7c1ux4ujb2sm" path="res://ui/unit_bar.tscn" id="3"]
 [ext_resource type="PackedScene" uid="uid://iq85nxbw2vy1" path="res://game_view/map.tscn" id="4"]
+[ext_resource type="PackedScene" uid="uid://qnj5rdt6fkv6" path="res://ui/building_ui/building_button_bar.tscn" id="5_eybf8"]
 
 [sub_resource type="StyleBoxFlat" id="400"]
 bg_color = Color(0.262745, 0.262745, 0.262745, 0.443137)
@@ -33,6 +34,17 @@ offset_top = -120.0
 offset_right = -10.0
 offset_bottom = -10.0
 theme_override_styles/panel = SubResource("400")
+
+[node name="BuildingButtonBar" parent="." instance=ExtResource("5_eybf8")]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_top = 76.0
+offset_bottom = 176.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [connection signal="position_clicked" from="GameArea" to="." method="_on_GameArea_position_clicked"]
 [connection signal="position_mouseover" from="GameArea" to="." method="_on_game_area_position_mouseover"]
